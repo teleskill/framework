@@ -1,0 +1,7 @@
+.phpunit.result.cache
+config.php
+composer.lock
+framework.code-workspace
+log/
+vendor/
+storage/
