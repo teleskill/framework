@@ -9,6 +9,7 @@ use Teleskill\Framework\MailSender\SmtpMailer;
 use Teleskill\Framework\MailSender\Enums\MailTransport;
 use Teleskill\Framework\MailSender\Enums\MailEncryption;
 use Teleskill\Framework\MailSender\Enums\MailPriority;
+use Teleskill\Framework\MailSender\Enums\MailSend;
 use Teleskill\Framework\MailSender\Email;
 use Teleskill\Framework\Cache\Cache;
 use Teleskill\Framework\Logger\Log;
@@ -97,7 +98,7 @@ class MailQueue {
         return true;
     }
 
-    public static function send(MailPriority $priority) : bool {
+    public static function send(MailPriority $priority) : MailSend {
         $instance = self::getInstance();
 
         $hash = 'queue:' . $priority->value;
@@ -136,20 +137,20 @@ class MailQueue {
                     $email = null;
                     $mailer = null;
 
-                    return true;
+                    return MailSend::SENT;
                 }
 
                 Log::error([self::LOGGER_NS, __FUNCTION__], 'priority: ' . $priority->value . ' - data: ' . $data);
 
-                return false;
+                return MailSend::ERROR;
             }
         } catch (Exception $exception) {
             Log::error([self::LOGGER_NS, __FUNCTION__], (string) $exception);
 
-            return false;
+            return MailSend::ERROR;
         }
 
-        return true;
+        return MailSend::NOT_FOUND;
     }
     
 }
