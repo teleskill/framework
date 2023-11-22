@@ -1,7 +1,7 @@
 .phpunit.result.cache
 config.php
 composer.lock
-framework.code-workspace
+*.code-workspace
 log/
 vendor/
 storage/

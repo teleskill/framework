@@ -68,7 +68,7 @@ class MailQueue {
         ];
 
         switch(get_class($mailer)) {
-            case 'Framework\MailSender\SmtpMailer':
+            case 'Teleskill\Framework\MailSender\SmtpMailer':
                 $data['mailer'] = [
                     'transport' => $mailer->transport,
                     'host' => $mailer->host,
