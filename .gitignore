@@ -1,7 +1,8 @@
 .phpunit.result.cache
-config.php
-composer.lock
-*.code-workspace
-log/
 vendor/
+/vendor
 storage/
+/storage
+/node_modules
+config.php
+*.code-workspace
