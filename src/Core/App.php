@@ -122,4 +122,8 @@ class App {
 	public static function dateToString(?CarbonDate $date, string $outputFormat) : string|null {
 		return CarbonDate::dateToString($date, $outputFormat);
 	}
+
+	public function getTimeZone() : string|null {
+		return $this->timezone;
+	}
 }
