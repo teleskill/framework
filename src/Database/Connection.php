@@ -282,4 +282,8 @@ class Connection {
 		return App::dateTimeToString($date, $this->timezone, $this->outputDateTimeFormat);
 	}
 
+	public function getTimeZone() : string|null {
+		return $this->timezone;
+	}
+
 }
