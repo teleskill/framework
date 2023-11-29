@@ -6,9 +6,9 @@ use Teleskill\Framework\Core\App;
 use Teleskill\Framework\Logger\Log;
 use Teleskill\Framework\Database\Enums\DBNode;
 use Teleskill\Framework\DateTime\CarbonDateTime;
+use Teleskill\Framework\DateTime\CarbonDate;
 use PDO;
 use Exception;
-use DateTime;
 
 class Connection {
 	
@@ -266,7 +266,7 @@ class Connection {
 		return ($value == 1 || $value == '1');
 	}
 
-	public function getDate(?string $date) : CarbonDateTime|null {
+	public function getDate(?string $date) : CarbonDate|null {
 		return App::stringToDate($date, $this->inputDateFormat);
 	}
 
@@ -274,7 +274,7 @@ class Connection {
 		return App::stringToDateTime($date, $this->timezone, $this->inputDateTimeFormat);
 	}
 
-	public function setDate(?CarbonDateTime $date) : string|null {
+	public function setDate(?CarbonDate $date) : string|null {
 		return App::dateToString($date, $this->outputDateFormat);
 	}
 
