@@ -74,7 +74,7 @@ class Connection {
 				
 				$this->writeConnOpened = true;
 			} catch(Exception $e) {
-				Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], Log::format($e));
+				Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], (string) $e);
 
 				throw new Exception('DB exception');
 
@@ -93,7 +93,7 @@ class Connection {
 				
 				$this->readConnOpened = true;
 			} catch(Exception $e) {
-				Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], Log::format($e));
+				Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], (string) $e);
 
 				throw new Exception('DB exception');
 
@@ -136,7 +136,7 @@ class Connection {
 			$stmt->execute($params);
 			$stmt = null;
 		} catch(Exception $e) {
-			Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], $e);
+			Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], (string) $e);
 
 			throw new Exception('DB exception');
 		}
@@ -152,7 +152,7 @@ class Connection {
 
 			return $this->conn(DBNode::MASTER)->lastInsertId();
 		} catch(Exception $e) {
-			Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], $e);
+			Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], (string) $e);
 
 			throw new Exception('DB exception');
 		}
@@ -171,7 +171,7 @@ class Connection {
 
 			return $rows;
 		} catch(Exception $e) {
-			Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], $e);
+			Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], (string) $e);
 
 			throw new Exception('DB exception');
 		}
@@ -194,7 +194,7 @@ class Connection {
 				return null;
 			}
 		} catch(Exception $e) {
-			Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], $e);
+			Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], (string) $e);
 
 			throw new Exception('DB exception');
 		}
@@ -214,7 +214,7 @@ class Connection {
 
 			return true;
 		} catch(Exception $e) {
-			Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], $e);
+			Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], (string) $e);
 
 			throw new Exception('DB exception');
 		}
@@ -234,7 +234,7 @@ class Connection {
 
 			return true;
 		} catch(Exception $e) {
-			Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], $e);
+			Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], (string) $e);
 			
 			throw new Exception('DB exception');
 		}
@@ -254,7 +254,7 @@ class Connection {
 
 			return true;
 		} catch(Exception $e) {
-			Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], $e);
+			Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], (string) $e);
 
 			throw new Exception('DB exception');
 		}

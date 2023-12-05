@@ -145,7 +145,7 @@ class Client {
             }
 
         } catch (Exception $e) {
-            Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], 'access token -> exception: ' . Log::format($e));
+            Log::error([self::LOGGER_NS, $this->id, __FUNCTION__], 'access token -> exception: ' . (string) $e);
         }
 
         return false;

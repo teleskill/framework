@@ -23,7 +23,7 @@ class RawText {
             
             return true;
         } catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], 'set exception: ' . Log::format($e));
+            Log::error([self::LOGGER_NS, __FUNCTION__], 'set exception: ' . (string) $e);
 
             return false;
         }

@@ -92,7 +92,7 @@ class WebApi {
             return $webApiResponse;
 
         } catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], $this->apiUrl . ' -> exception: ' . Log::format($e));
+            Log::error([self::LOGGER_NS, __FUNCTION__], $this->apiUrl . ' -> exception: ' . (string) $e);
         }
 
         return false;
@@ -115,7 +115,7 @@ class WebApi {
             return $webApiResponse;
 
         } catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], $this->apiUrl . ' -> payload: ' . $this->data->toString() . ' -> exception: ' . Log::format($e));
+            Log::error([self::LOGGER_NS, __FUNCTION__], $this->apiUrl . ' -> payload: ' . $this->data->toString() . ' -> exception: ' . (string) $e);
         }
 
         return false;
@@ -138,7 +138,7 @@ class WebApi {
             return $webApiResponse;
 
         } catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], $this->apiUrl . ' -> payload: ' . $this->data->toString() . ' -> exception: ' . Log::format($e));
+            Log::error([self::LOGGER_NS, __FUNCTION__], $this->apiUrl . ' -> payload: ' . $this->data->toString() . ' -> exception: ' . (string) $e);
         }
 
         return false;

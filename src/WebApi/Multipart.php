@@ -32,7 +32,7 @@ class Multipart {
 
             return true;
         } catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], 'addField exception: ' . Log::format($e));
+            Log::error([self::LOGGER_NS, __FUNCTION__], 'addField exception: ' . (string) $e);
 
             return false;
         }
@@ -61,7 +61,7 @@ class Multipart {
                 return false;
             }
         } catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], 'addFile exception: ' . Log::format($e));
+            Log::error([self::LOGGER_NS, __FUNCTION__], 'addFile exception: ' . (string) $e);
 
             return false;
         }
