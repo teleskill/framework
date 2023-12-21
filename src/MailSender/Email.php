@@ -12,9 +12,16 @@ class Email {
     public ?string $subject = null;
     public ?string $body = null;
     public ?string $cc = null;
+    public array $attachments = [];
 
 	public function __construct() {
 
+    }
+
+    public function attach(string $file) : bool {
+        $this->attachments[] = $file;
+
+        return true;
     }
     
 }
