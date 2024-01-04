@@ -26,7 +26,7 @@ class WebApi {
     private Headers $headers;
     private string $apiUrl;
 
-    public function __construct(WebApiMethod $method = WebApiMethod::GET, string $apiUrl, WebApiType $type = WebApiType::NONE, ?array $headers = null) {
+    public function __construct(WebApiMethod $method, string $apiUrl, WebApiType $type = WebApiType::NONE, ?array $headers = null) {
         $this->method = $method;
 		$this->type = $type;
         $this->headers = new Headers($headers);
