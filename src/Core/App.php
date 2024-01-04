@@ -4,7 +4,6 @@ namespace Teleskill\Framework\Core;
 
 use Teleskill\Framework\Config\Config;
 use Teleskill\Framework\DateTime\CarbonDateTime;
-use Teleskill\Framework\DateTime\CarbonDate;
 use Teleskill\Framework\Config\Enums\Environment;
 
 class App {
@@ -109,18 +108,18 @@ class App {
 		return CarbonDateTime::stringToDateTime($date, $inputTimezone, $inputFormat, $instance->timezone);
 	}
 
-	public static function stringToDate(?string $date, string $inputFormat) : CarbonDate|null {
+	public static function stringToDate(?string $date, string $inputFormat) : CarbonDateTime|null {
 		$instance = self::getInstance();
 
-		return CarbonDate::stringToDate($date, $inputFormat, $instance->timezone);
+		return CarbonDateTime::stringToDate($date, $inputFormat, $instance->timezone);
 	}
 
 	public static function dateTimeToString(?CarbonDateTime $date, string $outputTimezone, string $outputFormat) : string|null {
 		return CarbonDateTime::dateTimeToString($date, $outputTimezone, $outputFormat);
 	}
 
-	public static function dateToString(?CarbonDate $date, string $outputFormat) : string|null {
-		return CarbonDate::dateToString($date, $outputFormat);
+	public static function dateToString(?CarbonDateTime $date, string $outputFormat) : string|null {
+		return CarbonDateTime::dateToString($date, $outputFormat);
 	}
 
 	public static function getTimeZone() : string|null {

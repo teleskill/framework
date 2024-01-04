@@ -10,7 +10,6 @@ use Teleskill\Framework\Logger\Log;
 use Teleskill\Framework\Cache\Cache;
 use Teleskill\Framework\OpenID\Enums\OpenIDGrantType;
 use Teleskill\Framework\DateTime\CarbonDateTime;
-use Teleskill\Framework\DateTime\CarbonDate;
 use Exception;
 
 class Client {
@@ -155,7 +154,7 @@ class Client {
 		return ($value == true || $value == 'true');
 	}
 
-    public function getDate(?string $date) : CarbonDate|null {
+    public function getDate(?string $date) : CarbonDateTime|null {
 		return App::stringToDate($date, $this->inputDateFormat);
 	}
 
@@ -163,7 +162,7 @@ class Client {
 		return App::stringToDateTime($date, $this->timezone, $this->inputDateTimeFormat);
 	}
 
-	public function setDate(?CarbonDate $date) : string|null {
+	public function setDate(?CarbonDateTime $date) : string|null {
 		return App::dateToString($date, $this->outputDateFormat);
 	}
 

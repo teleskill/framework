@@ -45,4 +45,32 @@ final class CarbonDateTime extends Carbon {
 		return null;
 	}
 
+	public static function stringToDate(?string $date, string $inputFormat, $outputTimezone) : CarbonDateTime|null {
+		try {
+			if ($date) {
+				$dateObj = parent::createFromFormat($inputFormat, $date, $outputTimezone)->setTime(0, 0);
+
+				return $dateObj;
+			}
+		} catch (Exception $exception) {
+
+		}
+		
+		return null;
+	}
+
+	public static function dateToString(?CarbonDateTime $date, string $outputFormat) : string|null {
+		try {
+			if ($date) {
+				$dateObj = clone $date;
+
+				return $dateObj->format($outputFormat);
+			}
+		} catch (Exception $exception) {
+
+		}
+		
+		return null;
+	}
+
 }
