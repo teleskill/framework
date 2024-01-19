@@ -87,6 +87,7 @@ class MailQueue {
             'from_name' => $email->fromName ?? $mailer->fromName,
             'to' => $email->to,
             'cc' => $email->cc,
+            'bcc' => $email->bcc,
             'subject' => $email->subject,
             'body' => $email->body
         ];
@@ -129,7 +130,8 @@ class MailQueue {
                     $email->from = $jsonData['email']['from'];
                     $email->fromName = $jsonData['email']['from_name'];
                     $email->to = $jsonData['email']['to'];
-                    $email->cc = $jsonData['email']['cc'];
+                    $email->cc = $jsonData['email']['cc'] ?? [];
+                    $email->bcc = $jsonData['email']['bcc'] ?? [];
                     $email->subject = $jsonData['email']['subject'];
                     $email->body = $jsonData['email']['body'];
                     $mailer->send($email);
