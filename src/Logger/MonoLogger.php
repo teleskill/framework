@@ -23,7 +23,7 @@ abstract class MonoLogger {
     protected LogLevel $level;
     protected LogHandler $handler;
     protected string $file;
-    protected ?array $emailNotify;
+    //protected ?array $emailNotify;
 
     public function __construct(string $id, array $config) {
         try {
@@ -31,7 +31,7 @@ abstract class MonoLogger {
             $this->level = LogLevel::from($config['level']);
             $this->handler = LogHandler::from($config['handler']);
             $this->file = $config['file'];
-            $this->emailNotify = $config['email_notify'] ?? null;
+            //$this->emailNotify = $config['email_notify'] ?? null;
             
             $guid = Uuid::uuid4() . '-' . date('Ymd');
 
@@ -179,6 +179,7 @@ abstract class MonoLogger {
                     break;
             }
             
+            /*
             if ($this->emailNotify && $this->emailNotify['level'] <= $level->value) {
                 // Invio della mail di notifica
                 $email = new Email();
@@ -190,6 +191,7 @@ abstract class MonoLogger {
                 // Invio email
                 MailSender::enqueue($email, MailPriority::HIGH);
             }
+            */
 
             return true;
 
