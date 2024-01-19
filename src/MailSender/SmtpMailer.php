@@ -52,6 +52,14 @@ final class SmtpMailer extends Mailer {
                 ->subject($email->subject)
                 ->html($email->body);
 
+            if (!empty($email->cc)) {
+                $symfonyEmail->cc(...$email->cc);
+            }
+
+            if (!empty($email->bcc)) {
+                $symfonyEmail->bcc(...$email->bcc);
+            }
+
             $mailer->send($symfonyEmail);
 
             return true;

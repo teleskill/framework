@@ -11,7 +11,8 @@ class Email {
     public ?string $to = null;
     public ?string $subject = null;
     public ?string $body = null;
-    public ?string $cc = null;
+    public array $cc = [];
+    public array $bcc = [];
     public array $attachments = [];
 
 	public function __construct() {
