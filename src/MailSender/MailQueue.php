@@ -123,6 +123,7 @@ class MailQueue {
                             $mailer->password = $jsonData['mailer']['password'];
                             break;
                         default:
+                            Log::error([self::LOGGER_NS, __FUNCTION__], 'mailer transport not found');
                             return false;
                     }
 
