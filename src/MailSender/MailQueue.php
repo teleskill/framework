@@ -124,7 +124,8 @@ class MailQueue {
                             break;
                         default:
                             Log::error([self::LOGGER_NS, __FUNCTION__], 'mailer transport not found');
-                            return false;
+                            
+                            return MailSend::ERROR;
                     }
 
                     $email = new Email();
