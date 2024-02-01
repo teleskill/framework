@@ -3,6 +3,7 @@
 namespace Teleskill\Framework\MailSender;
 
 use Exception;
+use Ramsey\Uuid\Uuid;
 use Teleskill\Framework\Core\App;
 use Teleskill\Framework\Config\Config;
 use Teleskill\Framework\MailSender\SmtpMailer;
@@ -111,40 +112,47 @@ class MailQueue {
                 $jsonData = json_decode($data, true);
 
                 if ($jsonData) {
-                    Log::info([self::LOGGER_NS, __FUNCTION__], 'priority: ' . $priority->value . ' - data: ' . $data);
+                    $uuid = Uuid::uuid4();
+                    
+                    Log::info([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'priority' => $priority->value, 'data' => $data]);
 
-                    switch(MailTransport::tryFrom($jsonData['mailer']['transport'])) {
-                        case MailTransport::SMTP:
-                            $mailer = new SmtpMailer();
-                            $mailer->host = $jsonData['mailer']['host'];
-                            $mailer->port = $jsonData['mailer']['port'];
-                            $mailer->encryption = MailEncryption::tryFrom($jsonData['mailer']['encryption']) ?? MailEncryption::NONE;
-                            $mailer->username = $jsonData['mailer']['username'];
-                            $mailer->password = $jsonData['mailer']['password'];
-                            break;
-                        default:
-                            Log::error([self::LOGGER_NS, __FUNCTION__], 'mailer transport not found');
-                            
+                    try {
+                        switch(MailTransport::tryFrom($jsonData['mailer']['transport'])) {
+                            case MailTransport::SMTP:
+                                $mailer = new SmtpMailer();
+                                $mailer->host = $jsonData['mailer']['host'];
+                                $mailer->port = $jsonData['mailer']['port'];
+                                $mailer->encryption = MailEncryption::tryFrom($jsonData['mailer']['encryption']) ?? MailEncryption::NONE;
+                                $mailer->username = $jsonData['mailer']['username'];
+                                $mailer->password = $jsonData['mailer']['password'];
+                                break;
+                            default:
+                                Log::error([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'error' => 'mailer transport not found']);
+                                
+                                return MailSend::ERROR;
+                        }
+
+                        $email = new Email();
+                        $email->from = $jsonData['email']['from'];
+                        $email->fromName = $jsonData['email']['from_name'];
+                        $email->to = $jsonData['email']['to'];
+                        $email->cc = $jsonData['email']['cc'] ?? [];
+                        $email->bcc = $jsonData['email']['bcc'] ?? [];
+                        $email->subject = $jsonData['email']['subject'];
+                        $email->body = $jsonData['email']['body'];
+                        if (!$mailer->send($email)) {
+                            Log::error([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'error' => 'cannot send email']);
+
                             return MailSend::ERROR;
+                        }
+                    } catch (Exception $exception) {
+                        Log::error([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'error' => (string) $exception]);
                     }
-
-                    $email = new Email();
-                    $email->from = $jsonData['email']['from'];
-                    $email->fromName = $jsonData['email']['from_name'];
-                    $email->to = $jsonData['email']['to'];
-                    $email->cc = $jsonData['email']['cc'] ?? [];
-                    $email->bcc = $jsonData['email']['bcc'] ?? [];
-                    $email->subject = $jsonData['email']['subject'];
-                    $email->body = $jsonData['email']['body'];
-                    $mailer->send($email);
-
-                    $email = null;
-                    $mailer = null;
 
                     return MailSend::SENT;
                 }
 
-                Log::error([self::LOGGER_NS, __FUNCTION__], 'priority: ' . $priority->value . ' - data: ' . $data);
+                Log::error([self::LOGGER_NS, __FUNCTION__], ['priority' => $priority->value, 'data' => $data]);
 
                 return MailSend::ERROR;
             }

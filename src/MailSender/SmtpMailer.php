@@ -35,8 +35,6 @@ final class SmtpMailer extends Mailer {
 
     public function send(Email $email) : bool {
         try {
-            Log::info([self::LOGGER_NS, __FUNCTION__], $email->to . PHP_EOL . $email->subject . PHP_EOL . $email->body . PHP_EOL);
-
             $conn = 'smtp://' . $this->username . ':' . $this->password . '@'. $this->host . ':' . $this->port;
             if ($this->encryption != MailEncryption::NONE) {
                 $conn = $conn . '&/encryption=' . $this->encryption->value;
