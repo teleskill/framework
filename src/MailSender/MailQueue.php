@@ -127,7 +127,7 @@ class MailQueue {
                                 $mailer->password = $jsonData['mailer']['password'];
                                 break;
                             default:
-                                Log::error([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'error' => 'mailer transport not found']);
+                                Log::error([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'status' => 'mailer transport not found']);
                                 
                                 return MailSend::ERROR;
                         }
@@ -140,16 +140,20 @@ class MailQueue {
                         $email->bcc = $jsonData['email']['bcc'] ?? [];
                         $email->subject = $jsonData['email']['subject'];
                         $email->body = $jsonData['email']['body'];
-                        if (!$mailer->send($email)) {
-                            Log::error([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'error' => 'cannot send email']);
+                        if ($mailer->send($email)) {
+                            Log::info([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'status' => 'success']);
+
+                            return MailSend::SENT;
+                        } else {
+                            Log::error([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'status' => 'cannot send email']);
 
                             return MailSend::ERROR;
                         }
                     } catch (Exception $exception) {
-                        Log::error([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'error' => (string) $exception]);
-                    }
+                        Log::error([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'status' => (string) $exception]);
 
-                    return MailSend::SENT;
+                        return MailSend::ERROR;
+                    }
                 }
 
                 Log::error([self::LOGGER_NS, __FUNCTION__], ['priority' => $priority->value, 'data' => $data]);
