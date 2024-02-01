@@ -170,7 +170,7 @@ class Client {
 		return App::dateTimeToString($date, $this->timezone, $this->outputDateTimeFormat);
 	}
 
-    public function webApi(WebApiMethod $method = WebApiMethod::GET, string $url, WebApiType $type = WebApiType::NONE) : WebApi {
+    public function webApi(WebApiMethod $method, string $url, WebApiType $type = WebApiType::NONE) : WebApi {
 		return new WebApi($method, $this->apiHost . $url, $type, $this->getHeaders());
 	}
     
