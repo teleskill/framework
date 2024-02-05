@@ -60,6 +60,10 @@ class App {
         return $instance->url;
     }
 
+	public static function settings() : Config {
+        return Config::settings();
+    }
+
     public static function timezone() : null|string {
         $instance = self::getInstance();
 

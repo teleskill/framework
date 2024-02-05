@@ -45,4 +45,8 @@ class Config {
         return $instance->environment ?? null;
     }
 
+    public static function settings() : Config {
+        return self::getInstance();
+    }
+
 }
