@@ -44,6 +44,8 @@ class WebApi {
                 break;
             case WebApiType::RAW_JSON:
                 $this->data = new RawJson();
+                $this->headers->add('Content-Type', 'application/json');
+                $this->headers->add('Accept', 'application/json');
                 break;
             case WebApiType::RAW_TEXT:
                 $this->data = new RawText();
@@ -84,15 +86,33 @@ class WebApi {
             $webApiResponse = new WebApiResponse($response);
 
             if ($webApiResponse->success) {
-                Log::info([self::LOGGER_NS, __FUNCTION__], $this->apiUrl . ' -> response: ' . $webApiResponse->statusMessage . ' (' . $webApiResponse->statusCode . ') ' . $webApiResponse->content);
+                Log::info([self::LOGGER_NS, __FUNCTION__], [
+                    'url' => $this->apiUrl,
+                    'status' => [
+                        'message' => $webApiResponse->statusMessage,
+                        'code' => $webApiResponse->statusCode
+                    ],
+                    'response' => $webApiResponse->content
+                ]);
             } else {
-                Log::error([self::LOGGER_NS, __FUNCTION__], $this->apiUrl . ' -> response: ' . $webApiResponse->statusMessage . ' (' . $webApiResponse->statusCode . ') ' . $webApiResponse->content);
+                Log::error([self::LOGGER_NS, __FUNCTION__], [
+                    'url' => $this->apiUrl,
+                    'status' => [
+                        'message' => $webApiResponse->statusMessage,
+                        'code' => $webApiResponse->statusCode
+                    ],
+                    'response' => $webApiResponse->content
+                ]);
             }
 
             return $webApiResponse;
 
         } catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], $this->apiUrl . ' -> exception: ' . (string) $e);
+            Log::error([self::LOGGER_NS, __FUNCTION__], [
+                'url' => $this->apiUrl,
+                'payload' => $this->data->toString(),
+                'exception' => (string) $e
+            ]);
         }
 
         return false;
@@ -107,15 +127,35 @@ class WebApi {
             $webApiResponse = new WebApiResponse($response);
 
             if ($response->getStatusCode() >= 200 && $response->getStatusCode() <= 299) {
-                Log::info([self::LOGGER_NS, __FUNCTION__], $this->apiUrl . ' -> payload: ' . $this->data->toString() . ' -> response: ' . $webApiResponse->statusMessage . ' (' . $webApiResponse->statusCode . ') ' . $webApiResponse->content);
+                Log::info([self::LOGGER_NS, __FUNCTION__], [
+                    'url' => $this->apiUrl,
+                    'payload' => $this->data->toString(),
+                    'status' => [
+                        'message' => $webApiResponse->statusMessage,
+                        'code' => $webApiResponse->statusCode
+                    ],
+                    'response' => $webApiResponse->content
+                ]);
             } else {
-                Log::error([self::LOGGER_NS, __FUNCTION__], $this->apiUrl . ' -> payload: ' . $this->data->toString() . ' -> response: ' . $webApiResponse->statusMessage . ' (' . $webApiResponse->statusCode . ') ' . $webApiResponse->content);
+                Log::error([self::LOGGER_NS, __FUNCTION__], [
+                    'url' => $this->apiUrl,
+                    'payload' => $this->data->toString(),
+                    'status' => [
+                        'message' => $webApiResponse->statusMessage,
+                        'code' => $webApiResponse->statusCode
+                    ],
+                    'response' => $webApiResponse->content
+                ]);
             }
             
             return $webApiResponse;
 
         } catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], $this->apiUrl . ' -> payload: ' . $this->data->toString() . ' -> exception: ' . (string) $e);
+            Log::error([self::LOGGER_NS, __FUNCTION__], [
+                'url' => $this->apiUrl,
+                'payload' => $this->data->toString(),
+                'exception' => (string) $e
+            ]);
         }
 
         return false;
@@ -130,15 +170,35 @@ class WebApi {
             $webApiResponse = new WebApiResponse($response);
 
             if ($response->getStatusCode() >= 200 && $response->getStatusCode() <= 299) {
-                Log::info([self::LOGGER_NS, __FUNCTION__], $this->apiUrl . ' -> payload: ' . $this->data->toString() . ' -> response: ' . $webApiResponse->statusMessage . ' (' . $webApiResponse->statusCode . ') ' . $webApiResponse->content);
+                Log::info([self::LOGGER_NS, __FUNCTION__], [
+                    'url' => $this->apiUrl,
+                    'payload' => $this->data->toString(),
+                    'status' => [
+                        'message' => $webApiResponse->statusMessage,
+                        'code' => $webApiResponse->statusCode
+                    ],
+                    'response' => $webApiResponse->content
+                ]);
             } else {
-                Log::error([self::LOGGER_NS, __FUNCTION__], $this->apiUrl . ' -> payload: ' . $this->data->toString() . ' -> response: ' . $webApiResponse->statusMessage . ' (' . $webApiResponse->statusCode . ') ' . $webApiResponse->content);
+                Log::error([self::LOGGER_NS, __FUNCTION__], [
+                    'url' => $this->apiUrl,
+                    'payload' => $this->data->toString(),
+                    'status' => [
+                        'message' => $webApiResponse->statusMessage,
+                        'code' => $webApiResponse->statusCode
+                    ],
+                    'response' => $webApiResponse->content
+                ]);
             }
             
             return $webApiResponse;
 
         } catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], $this->apiUrl . ' -> payload: ' . $this->data->toString() . ' -> exception: ' . (string) $e);
+            Log::error([self::LOGGER_NS, __FUNCTION__], [
+                'url' => $this->apiUrl,
+                'payload' => $this->data->toString(),
+                'exception' => (string) $e
+            ]);
         }
 
         return false;
