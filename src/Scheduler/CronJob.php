@@ -2,49 +2,32 @@
 
 namespace Teleskill\Framework\Scheduler;
 
-use Teleskill\Framework\Logger\Log;
-use Teleskill\Framework\Core\App;
-use Teleskill\Framework\Cache\Cache;
-use Teleskill\Framework\Scheduler\Job;
-use Exception;
+use Teleskill\Framework\Config\Config;
 
-abstract class CronJob extends Job {
+abstract class CronJob {
 
 	const LOGGER_NS = self::class;
-	
-	protected int $ttl;
+
+	protected string $cache;
 	
 	public function __construct() {
-		$options = getopt('', [
-			"ttl:"
-		]);
+		$config = Config::get('framework', 'scheduler');
 
-		$this->ttl = $options['ttl'];
+		$this->cache = $config['cache'];
 	}
 
-	protected function isRunnable() : bool {
-		$key = 'scheduler:jobs:' . base64_encode(get_class($this));
-
-		// get last run timestamp from the cache
-		if (Cache::store($this->cache)->get($key)) {
-			return false;
-		} else {
-			// set timestamp into the cache that expires after ttl
-            Cache::store($this->cache)->set($key, App::timestamp(), $this->ttl);
-
-			return true;
-		}
-	}
-
+	// execute job
+	abstract protected function execute() : bool;
+	
 	// run job
 	public function run() : void  {
-		try {
-			if ($this->isRunnable()) {
-				$this->execute();
-			}
-		} catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
-        }
+		$this->execute();
+	}
+
+	protected function print(mixed $value) : void  {
+		print_r($value);
+
+		echo PHP_EOL;
 	}
 
 }
