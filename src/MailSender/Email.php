@@ -2,10 +2,13 @@
 
 namespace Teleskill\Framework\MailSender;
 
+use Teleskill\Framework\MailSender\Enums\MailPriority;
+
 class Email {
 
 	const LOGGER_NS = self::class;
 
+    public ?MailPriority $priority = MailPriority::LOW;
 	public ?string $from = null;
     public ?string $fromName = null;
     public ?string $to = null;
