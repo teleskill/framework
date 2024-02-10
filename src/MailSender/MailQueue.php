@@ -96,7 +96,13 @@ class MailQueue {
 
         $webApi = new WebApi(WebApiMethod::PUT, $mailer->apiUrl, WebApiType::RAW_JSON);
         $webApi->body()->set($data);
-        return $webApi->send();
+        $webApiResponse = $webApi->send();
+
+        if ($webApiResponse && $webApiResponse->success) {
+            return true;
+        }
+        
+        return false;
     }
 
     public static function append(mixed $mailer, Email $email) : bool {
