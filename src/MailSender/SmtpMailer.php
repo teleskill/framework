@@ -70,7 +70,7 @@ final class SmtpMailer extends Mailer {
         return false;
     }
 
-    public function enqueue(Email $email, ?MailPriority $priority) : bool {
+    public function enqueue(Email $email, ?MailPriority $priority = null) : bool {
         try {
             if ($priority) {
                 $email->priority = $priority;
