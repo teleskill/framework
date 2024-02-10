@@ -76,7 +76,7 @@ final class SmtpMailer extends Mailer {
                 $email->priority = $priority;
             }
 
-            MailQueue::add($this, $email);
+            MailQueue::enqueue($this, $email);
 
             return true;
         } catch (Exception $e) {

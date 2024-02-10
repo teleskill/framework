@@ -63,7 +63,43 @@ class MailQueue {
 	public function __wakeup() {
 	}
 
-    public static function add_old(mixed $mailer, Email $email) : bool {
+    public static function enqueue(mixed $mailer, Email $email) : bool {
+        $data = [];
+
+        switch(get_class($mailer)) {
+            case 'Teleskill\Framework\MailSender\SmtpMailer':
+                $data['mailer'] = [
+                    'transport' => $mailer->transport,
+                    'host' => $mailer->host,
+                    'port' => $mailer->port,
+                    'encryption' => $mailer->encryption,
+                    'username' => $mailer->username,
+                    'password' => $mailer->password
+                ];
+                break;
+            default:
+                return false;
+        }
+
+        $data['email'] = [
+            [
+                'from' => $email->from ?? $mailer->from,
+                'from_name' => $email->fromName ?? $mailer->fromName,
+                'to' => $email->to,
+                'cc' => $email->cc,
+                'bcc' => $email->bcc,
+                'subject' => $email->subject,
+                'body' => $email->body,
+                'priority' => $email->priority->value
+            ]
+        ];
+
+        $webApi = new WebApi(WebApiMethod::PUT, $mailer->apiUrl, WebApiType::RAW_JSON);
+        $webApi->body()->set($data);
+        return $webApi->send();
+    }
+
+    public static function append(mixed $mailer, Email $email) : bool {
         $instance = self::getInstance();
 
         $data = [
@@ -102,42 +138,6 @@ class MailQueue {
         Cache::store($instance->cache)->rPush($hash, json_encode($data));
 
         return true;
-    }
-
-    public static function add(mixed $mailer, Email $email) : bool {
-        $data = [];
-
-        switch(get_class($mailer)) {
-            case 'Teleskill\Framework\MailSender\SmtpMailer':
-                $data['mailer'] = [
-                    'transport' => $mailer->transport,
-                    'host' => $mailer->host,
-                    'port' => $mailer->port,
-                    'encryption' => $mailer->encryption,
-                    'username' => $mailer->username,
-                    'password' => $mailer->password
-                ];
-                break;
-            default:
-                return false;
-        }
-
-        $data['email'] = [
-            [
-                'from' => $email->from ?? $mailer->from,
-                'from_name' => $email->fromName ?? $mailer->fromName,
-                'to' => $email->to,
-                'cc' => $email->cc,
-                'bcc' => $email->bcc,
-                'subject' => $email->subject,
-                'body' => $email->body,
-                'priority' => $email->priority->value
-            ]
-        ];
-
-        $webApi = new WebApi(WebApiMethod::PUT, $mailer->apiUrl, WebApiType::RAW_JSON);
-        $webApi->body()->set($data);
-        return $webApi->send();
     }
 
     public static function send(MailPriority $priority) : MailSend {
