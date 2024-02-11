@@ -111,6 +111,7 @@ class MailQueue {
         $data = [
             'application' => App::id(),
             'timestamp' => App::timestamp(),
+            'uuid' => Uuid::uuid4()
         ];
 
         switch(get_class($mailer)) {
@@ -142,6 +143,8 @@ class MailQueue {
         $hash = 'queue:' . $email->priority->value;
 
         Cache::store($instance->cache)->rPush($hash, json_encode($data));
+                  
+        Log::info([self::LOGGER_NS, __FUNCTION__], $data);
 
         return true;
     }
@@ -158,11 +161,24 @@ class MailQueue {
                 $jsonData = json_decode($data, true);
 
                 if ($jsonData) {
-                    $uuid = Uuid::uuid4();
-                    
-                    Log::info([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'priority' => $priority->value, 'data' => $data]);
-
                     try {
+                        if ($uuid = $jsonData['uuid'] ?? NULL) {
+                            Log::info([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'status' => 'delivery in progress...']);
+                        } else {
+                            $uuid = Uuid::uuid4();
+                            
+                            Log::info([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'data' => $jsonData]);
+                        }
+
+                        $email = new Email();
+                        $email->from = $jsonData['email']['from'];
+                        $email->fromName = $jsonData['email']['from_name'];
+                        $email->to = $jsonData['email']['to'];
+                        $email->cc = $jsonData['email']['cc'] ?? [];
+                        $email->bcc = $jsonData['email']['bcc'] ?? [];
+                        $email->subject = $jsonData['email']['subject'];
+                        $email->body = $jsonData['email']['body'];
+
                         switch(MailTransport::tryFrom($jsonData['mailer']['transport'])) {
                             case MailTransport::SMTP:
                                 $mailer = new SmtpMailer();
@@ -174,25 +190,17 @@ class MailQueue {
                                 $mailer->password = $jsonData['mailer']['password'];
                                 break;
                             default:
-                                Log::error([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'status' => 'mailer transport not found']);
+                                Log::error([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'status' => 'mailer transport is not valid']);
                                 
                                 return MailSend::ERROR;
                         }
-
-                        $email = new Email();
-                        $email->from = $jsonData['email']['from'];
-                        $email->fromName = $jsonData['email']['from_name'];
-                        $email->to = $jsonData['email']['to'];
-                        $email->cc = $jsonData['email']['cc'] ?? [];
-                        $email->bcc = $jsonData['email']['bcc'] ?? [];
-                        $email->subject = $jsonData['email']['subject'];
-                        $email->body = $jsonData['email']['body'];
+                        
                         if ($mailer->send($email)) {
-                            Log::info([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'status' => 'success']);
+                            Log::info([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'status' => 'email successfully delivered']);
 
                             return MailSend::SENT;
                         } else {
-                            Log::error([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'status' => 'cannot send email']);
+                            Log::error([self::LOGGER_NS, __FUNCTION__], ['uuid' => $uuid, 'status' => 'delivery failure']);
 
                             return MailSend::ERROR;
                         }

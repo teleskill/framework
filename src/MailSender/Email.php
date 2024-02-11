@@ -9,7 +9,7 @@ class Email {
 	const LOGGER_NS = self::class;
 
     public ?MailPriority $priority = MailPriority::LOW;
-	public ?string $from = null;
+    public ?string $from = null;
     public ?string $fromName = null;
     public ?string $to = null;
     public ?string $subject = null;
