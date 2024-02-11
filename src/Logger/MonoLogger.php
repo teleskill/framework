@@ -187,9 +187,10 @@ abstract class MonoLogger {
                 $email->to = $this->emailNotify['to'];
                 $email->subject = $this->emailNotify['subject'];
                 $email->body = str_replace('{ERRORE}', $data, $this->emailNotify['body']);
+                $email->priority = MailPriority::HIGH;
 
                 // Invio email
-                MailSender::enqueue($email, MailPriority::HIGH);
+                MailSender::send($email);
             }
             */
 

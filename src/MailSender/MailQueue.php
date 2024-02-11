@@ -166,6 +166,7 @@ class MailQueue {
                         switch(MailTransport::tryFrom($jsonData['mailer']['transport'])) {
                             case MailTransport::SMTP:
                                 $mailer = new SmtpMailer();
+                                $mailer->enqueue = false;
                                 $mailer->host = $jsonData['mailer']['host'];
                                 $mailer->port = $jsonData['mailer']['port'];
                                 $mailer->encryption = MailEncryption::tryFrom($jsonData['mailer']['encryption']) ?? MailEncryption::NONE;

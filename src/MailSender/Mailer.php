@@ -17,6 +17,7 @@ abstract class Mailer {
     public string $to;
     public string $subject;
     public string $body;
+    public bool $enqueue = true;
 
 	public function __construct(?string $id) {
 		$this->id = $id;

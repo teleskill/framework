@@ -37,6 +37,12 @@ final class SmtpMailer extends Mailer {
 
     public function send(Email $email) : bool {
         try {
+            if ($this->enqueue) {
+                MailQueue::enqueue($this, $email);
+
+                return true;
+            }
+
             $conn = 'smtp://' . $this->username . ':' . $this->password . '@'. $this->host . ':' . $this->port;
             if ($this->encryption != MailEncryption::NONE) {
                 $conn = $conn . '&/encryption=' . $this->encryption->value;
@@ -69,23 +75,5 @@ final class SmtpMailer extends Mailer {
 
         return false;
     }
-
-    public function enqueue(Email $email, ?MailPriority $priority = null) : bool {
-        try {
-            if ($priority) {
-                $email->priority = $priority;
-            }
-
-            MailQueue::enqueue($this, $email);
-
-            return true;
-        } catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
-        }
-
-        return false;
-    }
-
-    
 
 }
