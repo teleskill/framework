@@ -114,8 +114,6 @@ class MailQueue {
             'uuid' => Uuid::uuid4()
         ];
 
-        Log::warning([self::LOGGER_NS, __FUNCTION__], 'aaaaaaaaaaaaaa');
-
         switch(get_class($mailer)) {
             case 'Teleskill\Framework\MailSender\SmtpMailer':
                 $data['mailer'] = [
