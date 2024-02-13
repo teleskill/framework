@@ -1,6 +1,6 @@
 <?php
 
-namespace Teleskill\Framework;
+namespace Teleskill\Framework\Validator;
 
 use Illuminate\Validation;
 use Illuminate\Translation;

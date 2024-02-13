@@ -1,8 +1,8 @@
 <?php
 
-namespace Teleskill\Framework;
+namespace Teleskill\Framework\Validator;
 
-use Teleskill\Framework\ValidatorFactory;
+use Teleskill\Framework\Validator\ValidatorFactory;
 
 class Validator
 {
