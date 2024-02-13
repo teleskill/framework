@@ -23,6 +23,12 @@ abstract class Mailer {
 		$this->id = $id;
     }
 
-    public abstract function send(Email $email) : bool;
+    public function send(Email $email) : bool {
+        if ($this->enqueue) {
+            MailQueue::append($this, $email);
+
+            return true;
+        }
+    }
     
 }

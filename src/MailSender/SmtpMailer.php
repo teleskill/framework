@@ -37,11 +37,7 @@ final class SmtpMailer extends Mailer {
 
     public function send(Email $email) : bool {
         try {
-            if ($this->enqueue) {
-                MailQueue::enqueue($this, $email);
-
-                return true;
-            }
+            parent::send($email);
 
             $conn = 'smtp://' . $this->username . ':' . $this->password . '@'. $this->host . ':' . $this->port;
             if ($this->encryption != MailEncryption::NONE) {
