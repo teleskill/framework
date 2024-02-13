@@ -16,6 +16,11 @@ class Cache {
 	protected array $stores = [];
 	private static Cache $instance;
 
+	private function __construct()
+    {
+        // Private constructor to prevent direct instantiation
+    }
+
 	/**
 	* Get Instance
 	*
@@ -93,6 +98,7 @@ class Cache {
 					case CacheDriver::REDIS:
 						$store = new RedisStore($id);
 						$store->prefix = $params['prefix'] ?? NULL;
+						$store->tenantPrefix = $params['tenant_prefix'] ?? false;
 						$store->db = $params['db'];
 						$store->master = $params['nodes'][CacheNode::MASTER->value];
 						$store->replica = $params['nodes'][CacheNode::READ_ONLY_REPLICA->value] ?? NULL;

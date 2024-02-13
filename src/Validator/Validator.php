@@ -8,6 +8,11 @@ class Validator
 {
     private static ValidatorFactory $instance;
 
+	private function __construct()
+    {
+        // Private constructor to prevent direct instantiation
+    }
+
     /**
 	* Get Instance
 	*

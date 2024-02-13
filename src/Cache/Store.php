@@ -11,13 +11,20 @@ abstract class Store {
 
 	protected ?string $id = null;
 	public ?string $prefix = null;
+	public bool $tenantPrefix = false;
 
 	public function __construct(string $id) {
 		$this->id = $id;
     }
 
 	protected function prefix() : string {
-		return ($this->prefix ?? App::id()) . ':';
+		$prefix = $this->prefix ?? App::id() . ':';
+
+		if ($this->tenantPrefix) {
+			//$prefix += App::tenantId() . ':';
+		}
+
+		return $prefix;
 	}
 
 	abstract public function del(string $key) : void;
