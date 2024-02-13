@@ -14,7 +14,7 @@
             "email": "satzori@teleskill.net"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
         "slim/psr7": "^1.6",
         "slim/slim": "4.*",
@@ -32,8 +32,7 @@
         "league/flysystem-ftp": "^3.0",
         "league/flysystem-sftp-v3": "^3.0",
         "league/flysystem-aws-s3-v3": "^3.0",
-        "illuminate/database": "^11.0@dev",
-        "illuminate/validation": "^11.0@dev"
+        "illuminate/validation": "^10.43"
     },
     "require-dev": {
         "phpunit/phpunit": "^10"
