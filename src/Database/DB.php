@@ -3,7 +3,9 @@
 namespace Teleskill\Framework\Database;
 
 use Teleskill\Framework\Database\Connection;
+use Teleskill\Framework\Database\Eloquent;
 use Teleskill\Framework\Config\Config;
+use Teleskill\Framework\Database\Enums\DBDriver;
 
 class DB {
 
@@ -87,12 +89,24 @@ class DB {
 			if (isset($this->list[$id])) {
 				$params = $this->list[$id];
 
-				$this->connections[$id] = new Connection($id, $params);
+				$this->addConnection($id, $params);
 			} else {
 				return null;
 			}
 		}
 
         return $this->connections[$id];
+    }
+
+	public function addConnection(string $id, array $params) : void {
+		switch(DBDriver::tryFrom($params['driver'] ?? DBDriver::DEFAULT->value)) {
+			case DBDriver::DEFAULT:
+				$this->connections[$id] = new Connection($id, $params);
+				break;
+			case DBDriver::DEFAULT:
+				$this->connections[$id] = new Eloquent($id, $params);
+				break;
+		}
+		
     }
 }

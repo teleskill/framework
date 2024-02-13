@@ -1,9 +1,14 @@
 <?php
 
-$capsule = new \Illuminate\Database\Capsule\Manager;
-$capsule->addConnection($container['settings']['db']);
+namespace Teleskill\Framework\Database;
 
-$capsule->setAsGlobal();
-$capsule->bootEloquent();
+class Eloquent {
 
-return $capsule;
+    public function __construct(string $id, array $params) {
+        $capsule = new \Illuminate\Database\Capsule\Manager;
+        $capsule->addConnection([]);
+
+        $capsule->setAsGlobal();
+        $capsule->bootEloquent();
+    }
+}
