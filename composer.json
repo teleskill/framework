@@ -31,7 +31,9 @@
         "league/flysystem-read-only": "^3.3",
         "league/flysystem-ftp": "^3.0",
         "league/flysystem-sftp-v3": "^3.0",
-        "league/flysystem-aws-s3-v3": "^3.0"
+        "league/flysystem-aws-s3-v3": "^3.0",
+        "illuminate/database": "^11.0@dev",
+        "illuminate/validation": "^11.0@dev"
     },
     "require-dev": {
         "phpunit/phpunit": "^10"
