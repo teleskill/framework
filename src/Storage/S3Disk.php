@@ -28,7 +28,7 @@ final class S3Disk extends Disk {
 	]
 	*/
 
-	public function __construct(?string $id, array $config, StoragePermissions $permissions, ?string $prefix = null) {
+	public function __construct(?string $id, array $config, StoragePermissions $permissions, ?string $prefix = null, ?bool $tenancy = false) {
 		Log::debug([self::LOGGER_NS, __FUNCTION__], [
 			'credentials' => [
 				'key'    => $config['access_key_id'],
@@ -63,7 +63,7 @@ final class S3Disk extends Disk {
 			$config['options'] ?? null
 		);
 
-		parent::__construct($id, $adapter, $permissions, $prefix);
+		parent::__construct($id, $adapter, $permissions, $prefix, $tenancy);
 	}
 
 	protected function getFullPathName(string $path) : string|null {

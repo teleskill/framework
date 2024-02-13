@@ -3,7 +3,6 @@
 namespace Teleskill\Framework\Cache;
 
 use Teleskill\Framework\Core\App;
-use Stringable;
 
 abstract class Store {
 
@@ -11,7 +10,7 @@ abstract class Store {
 
 	protected ?string $id = null;
 	public ?string $prefix = null;
-	public bool $tenantPrefix = false;
+	public bool $tenancy = false;
 
 	public function __construct(string $id) {
 		$this->id = $id;
@@ -20,7 +19,7 @@ abstract class Store {
 	protected function prefix() : string {
 		$prefix = $this->prefix ?? App::id() . ':';
 
-		if ($this->tenantPrefix) {
+		if ($this->tenancy) {
 			//$prefix += App::tenantId() . ':';
 		}
 

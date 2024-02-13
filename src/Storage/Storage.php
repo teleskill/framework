@@ -115,7 +115,7 @@ class Storage {
 					default:
 						return null;
 				}
-				
+
 				$this->disks[$id] = $disk;
 			} else {
 				return null;

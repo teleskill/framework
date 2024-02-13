@@ -12,12 +12,12 @@ final class LocalDisk extends Disk {
 	
 	protected string $root;
 
-	public function __construct(?string $id, array $config, StoragePermissions $permissions, ?string $prefix = null) {
+	public function __construct(?string $id, array $config, StoragePermissions $permissions, ?string $prefix = null, ?bool $tenancy = false) {
 		$this->root = $config['root'];
 
 		$adapter = new LocalFilesystemAdapter($config['root']);
 
-		parent::__construct($id, $adapter, $permissions, $prefix);
+		parent::__construct($id, $adapter, $permissions, $prefix, $tenancy);
 	}
 
 	public function getFullPathName(string $path) : string|null {

@@ -34,7 +34,7 @@ final class FtpDisk extends Disk {
 	]
 	*/
 
-	public function __construct(?string $id, array $config, StoragePermissions $permissions, ?string $prefix = null) {
+	public function __construct(?string $id, array $config, StoragePermissions $permissions, ?string $prefix = null, ?bool $tenancy = false) {
 		$adapter = new FtpAdapter(
 			// Connection options
 			FtpConnectionOptions::fromArray([
@@ -55,7 +55,7 @@ final class FtpDisk extends Disk {
 			])
 		);
 
-		parent::__construct($id, $adapter, $permissions, $prefix);
+		parent::__construct($id, $adapter, $permissions, $prefix, $tenancy);
 	}
 
 	protected function getFullPathName(string $path) : string|null {

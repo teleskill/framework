@@ -98,7 +98,7 @@ class Cache {
 					case CacheDriver::REDIS:
 						$store = new RedisStore($id);
 						$store->prefix = $params['prefix'] ?? NULL;
-						$store->tenantPrefix = $params['tenant_prefix'] ?? false;
+						$store->tenancy = $params['tenancy'] ?? false;
 						$store->db = $params['db'];
 						$store->master = $params['nodes'][CacheNode::MASTER->value];
 						$store->replica = $params['nodes'][CacheNode::READ_ONLY_REPLICA->value] ?? NULL;

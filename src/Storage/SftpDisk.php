@@ -25,7 +25,7 @@ final class SftpDisk extends Disk {
 	]
 	*/
 
-	public function __construct(?string $id, array $config, StoragePermissions $permissions, ?string $prefix = null) {
+	public function __construct(?string $id, array $config, StoragePermissions $permissions, ?string $prefix = null, ?bool $tenancy = false) {
 		$adapter = new SftpAdapter(
 			new SftpConnectionProvider(
 				$config['host'], //(required)
@@ -43,7 +43,7 @@ final class SftpDisk extends Disk {
 			$config['root'], // root path (required)
 		);
 
-		parent::__construct($id, $adapter, $permissions, $prefix);
+		parent::__construct($id, $adapter, $permissions, $prefix, $tenancy);
 	}
 
 	protected function getFullPathName(string $path) : string|null {

@@ -31,11 +31,15 @@ abstract class Disk {
 	public StoragePermissions $permissions;
 	protected ?string $id;
 	protected ?string $prefix;
+	public bool $tenancy = false;
 
-	public function __construct(?string $id, FilesystemAdapter $adapter, StoragePermissions $permissions, ?string $prefix = null) {
+	public function __construct(?string $id, FilesystemAdapter $adapter, StoragePermissions $permissions, ?string $prefix = null, ?bool $tenancy = false) {
 		$this->id = $id;
 		$this->prefix = $prefix;
 		$this->permissions = $permissions;
+		if ($this->tenancy) {
+			//$this->prefix += App::tenantId();
+		}
 
 		// Turn it into a path-prefixed adapter
 		if ($this->prefix) {
