@@ -2,8 +2,8 @@
 
 namespace Teleskill\Framework\Database\Enums;
 
-enum DBDriver : string {
-    case DEFAULT = 'default';
+enum DBHandler : string {
+    case STANDARD = 'standard';
     case ELOQUENT = 'eloquent';
 }
 

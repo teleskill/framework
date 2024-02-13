@@ -2,13 +2,11 @@
 
 namespace Teleskill\Framework\Database;
 
+use Teleskill\Framework\Database\CapsuleManager;
+
 class Eloquent {
 
-    public function __construct(string $id, array $params) {
-        $capsule = new \Illuminate\Database\Capsule\Manager;
-        $capsule->addConnection([]);
-
-        $capsule->setAsGlobal();
-        $capsule->bootEloquent();
+    public function __construct(string $id, array $settings) {
+        CapsuleManager::addConnection($settings, $id);
     }
 }

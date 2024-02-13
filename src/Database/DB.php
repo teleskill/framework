@@ -5,7 +5,8 @@ namespace Teleskill\Framework\Database;
 use Teleskill\Framework\Database\Connection;
 use Teleskill\Framework\Database\Eloquent;
 use Teleskill\Framework\Config\Config;
-use Teleskill\Framework\Database\Enums\DBDriver;
+use Teleskill\Framework\Database\Enums\DBHandler;
+
 
 class DB {
 
@@ -87,9 +88,7 @@ class DB {
 
 		if (!isset($this->connections[$id])) {
 			if (isset($this->list[$id])) {
-				$params = $this->list[$id];
-
-				$this->addConnection($id, $params);
+				$this->addConnection($id, DBHandler::tryFrom($connection['handler'] ?? DBHandler::STANDARD->value), $this->list[$id]['settings']);
 			} else {
 				return null;
 			}
@@ -98,15 +97,24 @@ class DB {
         return $this->connections[$id];
     }
 
-	public function addConnection(string $id, array $params) : void {
-		switch(DBDriver::tryFrom($params['driver'] ?? DBDriver::DEFAULT->value)) {
-			case DBDriver::DEFAULT:
-				$this->connections[$id] = new Connection($id, $params);
-				break;
-			case DBDriver::DEFAULT:
-				$this->connections[$id] = new Eloquent($id, $params);
-				break;
-		}
+	public function addConnection(string $id, DBHandler $handler, array $settings) : void {
 		
+
+		switch($handler) {
+			case DBHandler::STANDARD:
+				$this->connections[$id] = new Connection($id, $settings);
+				break;
+			case DBHandler::ELOQUENT:
+				$this->connections[$id] = new Eloquent($id, $settings);
+				break;
+		}		
     }
+
+	public static function boot() : void {
+		$instance = self::getInstance();
+
+		foreach($instance->list as $id => $connection) {
+			$instance->addConnection($id, (DBHandler::tryFrom($connection['handler']) ?? DBHandler::STANDARD), $connection['settings']);
+		}
+	}
 }
