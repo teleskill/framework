@@ -31,7 +31,6 @@ abstract class Disk {
 	public StoragePermissions $permissions;
 	protected ?string $id;
 	protected ?string $prefix;
-	public bool $tenancy = false;
 
 	public function __construct(?string $id, array $settings, FilesystemAdapter $adapter) {
 		$this->id = $id;

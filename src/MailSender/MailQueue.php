@@ -22,7 +22,7 @@ class MailQueue {
 
 	const LOGGER_NS = self::class;
 
-	protected string $redisStore;
+	protected string $redis;
 
 	private static MailQueue $instance;
 
@@ -37,7 +37,7 @@ class MailQueue {
             
 			self::$instance = new $class();
 
-			self::$instance->redisStore = Config::get('framework', 'mailSender')['redisStore'];
+			self::$instance->redis = Config::get('framework', 'mailSender')['redis'];
 		}
 
 		return self::$instance;
@@ -140,7 +140,7 @@ class MailQueue {
 
         $hash = 'mailsender:queue:' . $email->priority->value;
 
-        Redis::store($instance->redisStore)->rPush($hash, json_encode($data));
+        Redis::connection($instance->redis)->rPush($hash, json_encode($data));
                   
         Log::info([self::LOGGER_NS, __FUNCTION__], $data);
 
@@ -152,7 +152,7 @@ class MailQueue {
 
         $hash = 'mailsender:queue:' . $priority->value;
 
-        $data = Redis::store($instance->cache)->lPop($hash);
+        $data = Redis::connection($instance->cache)->lPop($hash);
 
         try {
             if ($data) {

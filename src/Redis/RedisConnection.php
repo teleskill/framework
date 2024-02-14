@@ -8,10 +8,12 @@ use Teleskill\Framework\Redis\Enums\RedisNode;
 use Redis as PhpRedis;
 use Exception;
 
-final class RedisStore extends Store {
+final class RedisConnection  {
 
 	const LOGGER_NS = self::class;
 
+	protected ?string $id = null;
+	public ?string $prefix = null;
 	protected ?PhpRedis $writeConn;
 	protected ?PhpRedis $readconn;
 	protected bool $writeConnOpened;
@@ -21,8 +23,7 @@ final class RedisStore extends Store {
 	public ?array $replica;
 	
 	public function __construct(string $id) {
-		parent::__construct($id);
-
+		$this->id = $id;
 		$this->writeConn = null;
 		$this->readconn = null;
 		$this->writeConnOpened = false;

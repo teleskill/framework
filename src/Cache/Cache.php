@@ -90,18 +90,13 @@ class Cache {
 
 		if (!isset($this->stores[$id])) {
 			if (isset($this->list[$id])) {
-				$params = $this->list[$id];
+				$cacheData = $this->list[$id];
 
-				$driver = CacheDriver::from($params['driver']);
+				$driver = CacheDriver::from($cacheData['driver']);
 
 				switch ($driver) {
 					case CacheDriver::REDIS:
-						$store = new RedisStore($id);
-						$store->prefix = $params['prefix'] ?? NULL;
-						$store->tenancy = $params['tenancy'] ?? false;
-						$store->db = $params['db'];
-						$store->master = $params['nodes'][RedisNode::MASTER->value];
-						$store->replica = $params['nodes'][RedisNode::READ_ONLY_REPLICA->value] ?? NULL;
+						$store = new RedisStore($id, $cacheData['handler']);
 
 						$this->stores[$id] = $store;
 						

@@ -5,134 +5,49 @@ namespace Teleskill\Framework\Cache;
 use Teleskill\Framework\Logger\Log;
 use Teleskill\Framework\Cache\Store;
 use Teleskill\Framework\Redis\Enums\RedisNode;
-use Redis as PhpRedis;
+use Teleskill\Framework\Redis\Redis;
+use Teleskill\Framework\Redis\RedisConnection;
 use Exception;
 
 final class RedisStore extends Store {
 
 	const LOGGER_NS = self::class;
 
-	protected ?PhpRedis $writeConn;
-	protected ?PhpRedis $readconn;
-	protected bool $writeConnOpened;
-	protected bool $readconnopened;
-	public int $db;
-	public array $master;
-	public ?array $replica;
-	
-	public function __construct(string $id) {
-		parent::__construct($id);
+	protected RedisConnection $connection;
 
-		$this->writeConn = null;
-		$this->readconn = null;
-		$this->writeConnOpened = false;
-		$this->readconnopened = false;
-	}
-	
-	public function __destruct() {
-		$this->writeConn = null;
-		$this->readconn = null;
-	}
-    
-    // connect to write host
-	private function openWriteConnection() : void {
-		if (!$this->writeConnOpened) {
-			try {
-				$this->writeConn = new PhpRedis();
-				$this->writeConn->connect($this->master['host'], $this->master['port']);
-				$this->writeConn->select($this->db);
-				$this->writeConnOpened = true;
-			} catch(Exception $e) {
-				Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
+	public function __construct(string $id, string $connectionId) {
+		parent::__construct($id, $connectionId);
 
-				throw new Exception('Cache exception');
-			}
-		}
+		$this->connection = Redis::connection($connectionId);
 	}
-	
-	// connect to read host
-	private function openReadConnection() : void {
-		if (!$this->readconnopened) {
-			try {
-				$this->readconn = new PhpRedis();
-				$this->readconn->connect($this->replica['host'], $this->replica['port']);
-				$this->readconn->select($this->db);
-				$this->readconnopened = true;
-			} catch(Exception $e) {
-				Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
 
-				throw new Exception('Cache exception');
-			}
-		}
+	private function hashPrefix(string $key) {
+		return self::HASH_PREFIX . $key;
 	}
 	
-	private function conn(RedisNode $conn_mode) : PhpRedis|null {
-		if ($conn_mode == RedisNode::READ_ONLY_REPLICA && $this->replica) {
-			$this->openReadConnection();
-			
-			return $this->readconn;
-		} else {
-			$this->openWriteConnection();
-			
-			return $this->writeConn;
-		}
-	}
-    
-    public function del(string $key) : void {
+	public function del(string $key) : void {
 		try {
-			$hash = $this->prefix() . $key;
+			$hash = $this->hashPrefix($key);
 
 			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
 
-			$this->conn(RedisNode::MASTER)->del($hash);
+			$this->connection->del($hash);
+			
 		} catch (Exception $e) {
 			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
 		}
 	}
 	
-	public function get(string $key) : array|string|null {
+	public function get(string $key, mixed $default = null) : mixed {
 		try {
-			$hash = $this->prefix() . $key;
+			$hash = $this->hashPrefix($key);
 
 			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
 
-			$data = $this->conn(RedisNode::READ_ONLY_REPLICA)->get($hash);
+			$data = unserialize($this->connection->get($hash));
 
-			if ($data) {
-				return json_decode($data, true);
-			} else {
-				return $data;
-			}
-		} catch (Exception $e) {
-			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
-		}
+			return $data;
 
-		return false;
-	}
-	
-	public function set(string $key, mixed $value, ?int $ttl = null, ?bool $notExists = false) : bool {
-		try {
-			$hash = $this->prefix() . $key;
-
-			if ($value) {
-				$data = json_encode($value);
-			} else {
-				$data = $value;
-			}
-
-			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $data, 'ttl' => $ttl, 'notExists' => $notExists]);
-
-			$options = [];
-
-			if ($notExists) {
-				$options[] = 'NX';
-			}
-			
-			if ($ttl) {
-				$options['EX'] = $ttl;
-			}
-		
-			return $this->conn(RedisNode::MASTER)->set($hash, $data, $options);
 		} catch (Exception $e) {
 			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
 		}
@@ -142,11 +57,12 @@ final class RedisStore extends Store {
 	
 	public function exists(string $key) : bool {
 		try {
-			$hash = $this->prefix() . $key;
+			$hash = $this->hashPrefix($key);
 			
 			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
 
-			return $this->conn(RedisNode::READ_ONLY_REPLICA)->exists($hash);
+			return $this->connection->exists($hash);
+
 		} catch (Exception $e) {
 			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
 		}
@@ -154,82 +70,181 @@ final class RedisStore extends Store {
 		return false;
 	}
 
-	public function rPush(string $key, string $value) : int|false {
+	public function add(string $key, mixed $value, ?int $ttl = null) : bool {
 		try {
-			$hash = $this->prefix() . $key;
-			
-			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $value]);
+			$hash = $this->hashPrefix($key);
 
-			return $this->conn(RedisNode::MASTER)->rPush($hash, $value);
-		} catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
-        }
+			$data = serialize($value);
 
-        return false;
-	}
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $data, 'ttl' => $ttl]);
 
-	public function lPop(string $key, bool $jsonDecode = false) : string|array|false {
-		try {
-			$hash = $this->prefix() . $key;
-			
-			Log::debug([self::LOGGER_NS, __FUNCTION__], $hash);
+			$options = ['NX'];
 
-			$data = $this->conn(RedisNode::MASTER)->lPop($hash);
-
-			if ($data) {
-				if ($jsonDecode) {
-					return json_decode($data, true);
-				} else {
-					return $data;
-				}
-			} else {
-				return false;
+			if ($ttl) {
+				$options['EX'] = $ttl;
 			}
-		} catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
-        }
+		
+			return $this->connection->set($hash, $data, $options);
 
-        return false;
+		} catch (Exception $e) {
+			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
+		}
+
+		return false;
 	}
 
-	public function rPop(string $key, bool $jsonDecode = false) : string|array|false {
+	public function put(string $key, mixed $value, ?int $ttl = null) : bool {
 		try {
-			$hash = $this->prefix() . $key;
-			
-			Log::debug([self::LOGGER_NS, __FUNCTION__], $hash);
+			$hash = $this->hashPrefix($key);
 
-			$data = $this->conn(RedisNode::MASTER)->rPop($hash);
+			$data = serialize($value);
 
-			if ($data) {
-				if ($jsonDecode) {
-					return json_decode($data, true);
-				} else {
-					return $data;
-				}
-			} else {
-				return false;
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $data, 'ttl' => $ttl]);
+
+			$options = [];
+
+			if ($ttl) {
+				$options['EX'] = $ttl;
 			}
+		
+			return $this->connection->set($hash, $data, $options);
+
 		} catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
-        }
+			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
+		}
 
-        return false;
+		return false;
 	}
 
-	public function lPopAll(string $key) : array {
-		$hash = $this->prefix() . $key;
+	public function has(string $key) : bool {
+		try {
+			$hash = $this->hashPrefix($key);
+			
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
+
+			return $this->connection->exists($hash);
+		} catch (Exception $e) {
+			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
+		}
+
+		return false;
+	}
+
+	public function increment(string $key, ?int $amount = 1) : int|null {
+		try {
+			$hash = $this->hashPrefix($key);
+			
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
+
+			return $this->connection->incr($hash, $amount);
+		} catch (Exception $e) {
+			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
+		}
+
+		return null;
+	}
+
+	public function decrement(string $key, ?int $amount = 1) : int|null {
+		try {
+			$hash = $this->hashPrefix($key);
+			
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
+
+			return $this->connection->decrement($hash, $amount);
+
+		} catch (Exception $e) {
+			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
+		}
+
+		return null;
+	}
+
+	public function pull(string $key) : mixed {
+		try {
+			$hash = $this->hashPrefix($key);
+			
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
+
+			$value = $this->connection->get($hash);
+
+			$this->connection->del($hash);
+
+			return $value;
+
+		} catch (Exception $e) {
+			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
+		}
+
+		return null;
+	}
+
+    public function remember(string $key, int $ttl, mixed $value = null) : bool {
+		try {
+			$hash = $this->hashPrefix($key);
+
+			$data = serialize($value);
+
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $data, 'ttl' => $ttl]);
+
+			$options = [];
+
+			if ($ttl) {
+				$options['EX'] = $ttl;
+			}
 		
-		Log::debug([self::LOGGER_NS, __FUNCTION__], $hash);
+			return $this->connection->set($hash, $data, $options);
 
-		return $this->conn(RedisNode::MASTER)->lPop($hash, -1);
+		} catch (Exception $e) {
+			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
+		}
+
+		return false;
 	}
 
-	public function rPopAll(string $key) : array {
-		$hash = $this->prefix() . $key;
-		
-		Log::debug([self::LOGGER_NS, __FUNCTION__], $hash);
+	public function rememberForever(string $key, mixed $value = null) : bool {
+		try {
+			$hash = $this->hashPrefix($key);
 
-		return $this->conn(RedisNode::MASTER)->rPop($hash, -1);
+			$data = serialize($value);
+
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $data]);
+
+			return $this->connection->set($hash, $data);
+
+		} catch (Exception $e) {
+			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
+		}
+
+		return false;
 	}
-	
+
+	public function forever(string $key, mixed $value) : bool {
+		try {
+			$hash = $this->hashPrefix($key);
+
+			$data = serialize($value);
+
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $data]);
+
+			return $this->connection->set($hash, $data);
+
+		} catch (Exception $e) {
+			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
+		}
+
+		return false;
+	}
+
+	public function forget(string $key) : void {
+		try {
+			$hash = $this->hashPrefix($key);
+
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
+
+			$this->connection->del($hash);
+
+		} catch (Exception $e) {
+			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
+		}
+	}
 }

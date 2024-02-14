@@ -2,8 +2,7 @@
 
 namespace Teleskill\Framework\Redis;
 
-use Teleskill\Framework\Cache\RedisStore;
-use Teleskill\Framework\Cache\Enums\CacheDriver;
+use Teleskill\Framework\Redis\RedisConnection;
 use Teleskill\Framework\Redis\Enums\RedisNode;
 use Teleskill\Framework\Config\Config;
 
@@ -13,7 +12,7 @@ class Redis {
 
 	protected string $default;
 	protected array $list = [];
-	protected array $stores = [];
+	protected array $connections = [];
 	private static Redis $instance;
 
 	private function __construct()
@@ -35,7 +34,7 @@ class Redis {
 			$config = Config::get('framework', 'redis');
 
 			self::$instance->default = $config['default'];
-			self::$instance->list = $config['stores'];
+			self::$instance->list = $config['connections'];
 		}
 
 		return self::$instance;
@@ -62,10 +61,10 @@ class Redis {
 	public static function __callStatic(string $method, array $arguments) {
 		$instance = self::getInstance();
 
-		$store = $instance->getStore();
+		$connection = $instance->getConnection();
 
-		if ($store) {
-			return $store->$method(...$arguments);
+		if ($connection) {
+			return $connection->$method(...$arguments);
 		}
         
 		return null;
@@ -77,37 +76,37 @@ class Redis {
 		return $instance->list;
     }
 
-	public static function store(string $id) : mixed {
+	public static function connection(string $id) : RedisConnection {
 		$instance = self::getInstance();
 
-		return $instance->getStore($id);
+		return $instance->getConnection($id);
     }
 
-	protected function getStore(?string $id = null) : mixed {
+	protected function getConnection(?string $id = null) : RedisConnection {
 		if (!$id) {
 			$id = $this->default;
 		}
 
-		if (!isset($this->stores[$id])) {
+		if (!isset($this->connections[$id])) {
 			if (isset($this->list[$id])) {
-				$storeData = $this->list[$id];
+				$connectionData = $this->list[$id];
 
-				$store = new RedisStore($id);
-				if ($store->prefix = $storeData['prefix'] ?? null) {
-					$store->prefix = str_replace(['app_id', 'tenant_id'], ['lms', '2'], $store->prefix);
+				$connection = new RedisConnection($id);
+				if ($connection->prefix = $connectionData['prefix'] ?? null) {
+					$connection->prefix = str_replace(['app_id', 'tenant_id'], ['lms', '2'], $connection->prefix);
 				}
-				$store->db = $storeData['db'] ?? 0;
-				$store->master = $storeData['nodes'][RedisNode::MASTER->value];
-				$store->replica = $storeData['nodes'][RedisNode::READ_ONLY_REPLICA->value] ?? null;
+				$connection->db = $connectionData['db'] ?? 0;
+				$connection->master = $connectionData['nodes'][RedisNode::MASTER->value];
+				$connection->replica = $connectionData['nodes'][RedisNode::READ_ONLY_REPLICA->value] ?? null;
 
-				$this->stores[$id] = $store;
+				$this->connections[$id] = $connection;
 				
 			} else {
 				return null;
 			}
 		}
 
-		return $this->stores[$id];
+		return $this->connections[$id];
 	}
     
 }
