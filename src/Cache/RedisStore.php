@@ -4,7 +4,6 @@ namespace Teleskill\Framework\Cache;
 
 use Teleskill\Framework\Logger\Log;
 use Teleskill\Framework\Cache\Store;
-use Teleskill\Framework\Redis\Enums\RedisNode;
 use Teleskill\Framework\Redis\Redis;
 use Teleskill\Framework\Redis\RedisConnection;
 use Exception;
@@ -25,19 +24,6 @@ final class RedisStore extends Store {
 		return self::HASH_PREFIX . $key;
 	}
 	
-	public function del(string $key) : void {
-		try {
-			$hash = $this->hashPrefix($key);
-
-			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
-
-			$this->connection->del($hash);
-			
-		} catch (Exception $e) {
-			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
-		}
-	}
-	
 	public function get(string $key, mixed $default = null) : mixed {
 		try {
 			$hash = $this->hashPrefix($key);
@@ -55,21 +41,6 @@ final class RedisStore extends Store {
 		return false;
 	}
 	
-	public function exists(string $key) : bool {
-		try {
-			$hash = $this->hashPrefix($key);
-			
-			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
-
-			return $this->connection->exists($hash);
-
-		} catch (Exception $e) {
-			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
-		}
-
-		return false;
-	}
-
 	public function add(string $key, mixed $value, ?int $ttl = null) : bool {
 		try {
 			$hash = $this->hashPrefix($key);
@@ -150,7 +121,7 @@ final class RedisStore extends Store {
 			
 			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
 
-			return $this->connection->decrement($hash, $amount);
+			return $this->connection->decr($hash, $amount);
 
 		} catch (Exception $e) {
 			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
@@ -165,7 +136,7 @@ final class RedisStore extends Store {
 			
 			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
 
-			$value = $this->connection->get($hash);
+			$value = unserialize($this->connection->get($hash));
 
 			$this->connection->del($hash);
 

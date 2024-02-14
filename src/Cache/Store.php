@@ -18,16 +18,12 @@ abstract class Store {
 		$this->connectionId = $connectionId;
     }
 
-	abstract public function del(string $key) : void;
-	
 	abstract public function get(string $key, mixed $default = null) : mixed;
 
 	abstract public function add(string $key, mixed $value, ?int $ttl = null) : bool;
 
 	abstract public function put(string $key, mixed $value, ?int $ttl = null) : bool;
 	
-	abstract public function exists(string $key) : bool;
-
 	abstract public function has(string $key) : bool;
 
 	abstract public function increment(string $key, ?int $amount) : int|null;

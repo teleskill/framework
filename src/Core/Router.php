@@ -58,6 +58,8 @@ class Router {
                 } else {
                     $response = $app->getResponseFactory()->createResponse()->withStatus(500);
                 }
+
+                echo (string) $exception;
                 
             } catch(Exception $e) {
                 $response = $app->getResponseFactory()->createResponse()->withStatus(500);

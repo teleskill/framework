@@ -4,7 +4,6 @@ namespace Teleskill\Framework\Cache;
 
 use Teleskill\Framework\Cache\RedisStore;
 use Teleskill\Framework\Cache\Enums\CacheDriver;
-use Teleskill\Framework\Redis\Enums\RedisNode;
 use Teleskill\Framework\Config\Config;
 
 class Cache {
@@ -96,7 +95,7 @@ class Cache {
 
 				switch ($driver) {
 					case CacheDriver::REDIS:
-						$store = new RedisStore($id, $cacheData['handler']);
+						$store = new RedisStore($id, $cacheData['connection']);
 
 						$this->stores[$id] = $store;
 						
