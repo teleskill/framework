@@ -33,12 +33,11 @@ abstract class Disk {
 	protected ?string $prefix;
 	public bool $tenancy = false;
 
-	public function __construct(?string $id, FilesystemAdapter $adapter, StoragePermissions $permissions, ?string $prefix = null, ?bool $tenancy = false) {
+	public function __construct(?string $id, array $settings, FilesystemAdapter $adapter) {
 		$this->id = $id;
-		$this->prefix = $prefix;
-		$this->permissions = $permissions;
-		if ($this->tenancy) {
-			//$this->prefix += App::tenantId();
+		$this->permissions = StoragePermissions::from($settings['permissions'] ?? StoragePermissions::WRITE);
+		if ($this->prefix = $settings['prefix'] ?? null) {
+			$this->prefix = str_replace(['app_id', 'tenant_id'], ['lms', '2'], $this->prefix);
 		}
 
 		// Turn it into a path-prefixed adapter

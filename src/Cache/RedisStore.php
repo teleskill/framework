@@ -4,7 +4,7 @@ namespace Teleskill\Framework\Cache;
 
 use Teleskill\Framework\Logger\Log;
 use Teleskill\Framework\Cache\Store;
-use Teleskill\Framework\Cache\Enums\CacheNode;
+use Teleskill\Framework\Redis\Enums\RedisNode;
 use Redis as PhpRedis;
 use Exception;
 
@@ -66,8 +66,8 @@ final class RedisStore extends Store {
 		}
 	}
 	
-	private function conn(CacheNode $conn_mode) : PhpRedis|null {
-		if ($conn_mode == CacheNode::READ_ONLY_REPLICA && $this->replica) {
+	private function conn(RedisNode $conn_mode) : PhpRedis|null {
+		if ($conn_mode == RedisNode::READ_ONLY_REPLICA && $this->replica) {
 			$this->openReadConnection();
 			
 			return $this->readconn;
@@ -84,7 +84,7 @@ final class RedisStore extends Store {
 
 			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
 
-			$this->conn(CacheNode::MASTER)->del($hash);
+			$this->conn(RedisNode::MASTER)->del($hash);
 		} catch (Exception $e) {
 			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
 		}
@@ -96,7 +96,7 @@ final class RedisStore extends Store {
 
 			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
 
-			$data = $this->conn(CacheNode::READ_ONLY_REPLICA)->get($hash);
+			$data = $this->conn(RedisNode::READ_ONLY_REPLICA)->get($hash);
 
 			if ($data) {
 				return json_decode($data, true);
@@ -132,7 +132,7 @@ final class RedisStore extends Store {
 				$options['EX'] = $ttl;
 			}
 		
-			return $this->conn(CacheNode::MASTER)->set($hash, $data, $options);
+			return $this->conn(RedisNode::MASTER)->set($hash, $data, $options);
 		} catch (Exception $e) {
 			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
 		}
@@ -146,7 +146,7 @@ final class RedisStore extends Store {
 			
 			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
 
-			return $this->conn(CacheNode::READ_ONLY_REPLICA)->exists($hash);
+			return $this->conn(RedisNode::READ_ONLY_REPLICA)->exists($hash);
 		} catch (Exception $e) {
 			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
 		}
@@ -160,7 +160,7 @@ final class RedisStore extends Store {
 			
 			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $value]);
 
-			return $this->conn(CacheNode::MASTER)->rPush($hash, $value);
+			return $this->conn(RedisNode::MASTER)->rPush($hash, $value);
 		} catch (Exception $e) {
             Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
         }
@@ -174,7 +174,7 @@ final class RedisStore extends Store {
 			
 			Log::debug([self::LOGGER_NS, __FUNCTION__], $hash);
 
-			$data = $this->conn(CacheNode::MASTER)->lPop($hash);
+			$data = $this->conn(RedisNode::MASTER)->lPop($hash);
 
 			if ($data) {
 				if ($jsonDecode) {
@@ -198,7 +198,7 @@ final class RedisStore extends Store {
 			
 			Log::debug([self::LOGGER_NS, __FUNCTION__], $hash);
 
-			$data = $this->conn(CacheNode::MASTER)->rPop($hash);
+			$data = $this->conn(RedisNode::MASTER)->rPop($hash);
 
 			if ($data) {
 				if ($jsonDecode) {
@@ -221,7 +221,7 @@ final class RedisStore extends Store {
 		
 		Log::debug([self::LOGGER_NS, __FUNCTION__], $hash);
 
-		return $this->conn(CacheNode::MASTER)->lPop($hash, -1);
+		return $this->conn(RedisNode::MASTER)->lPop($hash, -1);
 	}
 
 	public function rPopAll(string $key) : array {
@@ -229,7 +229,7 @@ final class RedisStore extends Store {
 		
 		Log::debug([self::LOGGER_NS, __FUNCTION__], $hash);
 
-		return $this->conn(CacheNode::MASTER)->rPop($hash, -1);
+		return $this->conn(RedisNode::MASTER)->rPop($hash, -1);
 	}
 	
 }

@@ -14,27 +14,32 @@ final class FtpDisk extends Disk {
 	/*
 	'ftp' => [
 		'driver' => StorageDriver::FTP->value,
-		'permissions' => StoragePermissions::WRITE->value,
-		'config' => [
-			'host' => 'hostname', // required
-			'root' => '/root/path/', // required
-			'username' => 'username', // required
-			'password' => 'password', // required
-			'port' => 21,
-			'ssl' => false,
-			'timeout' => 90,
-			'utf8' => false,
-			'passive' => true,
-			'transferMode' => FTP_BINARY,
-			'systemType' => null, // 'windows' or 'unix'
-			'ignorePassiveAddress' => null, // true or false
-			'timestampsOnUnixListingsEnabled' => false, // true or false
-			'recurseManually' => true // true
+		'settings' => [
+			'prefix' => '{app_id}/{tenant_id}:',
+			'permissions' => StoragePermissions::WRITE->value,
+			'config' => [
+				'host' => 'hostname', // required
+				'root' => '/root/path/', // required
+				'username' => 'username', // required
+				'password' => 'password', // required
+				'port' => 21,
+				'ssl' => false,
+				'timeout' => 90,
+				'utf8' => false,
+				'passive' => true,
+				'transferMode' => FTP_BINARY,
+				'systemType' => null, // 'windows' or 'unix'
+				'ignorePassiveAddress' => null, // true or false
+				'timestampsOnUnixListingsEnabled' => false, // true or false
+				'recurseManually' => true // true
+			]
 		]
 	]
 	*/
 
-	public function __construct(?string $id, array $config, StoragePermissions $permissions, ?string $prefix = null, ?bool $tenancy = false) {
+	public function __construct(?string $id, $settings) {
+		$config = $settings['config'];
+
 		$adapter = new FtpAdapter(
 			// Connection options
 			FtpConnectionOptions::fromArray([
@@ -55,7 +60,7 @@ final class FtpDisk extends Disk {
 			])
 		);
 
-		parent::__construct($id, $adapter, $permissions, $prefix, $tenancy);
+		parent::__construct($id, $settings, $adapter);
 	}
 
 	protected function getFullPathName(string $path) : string|null {

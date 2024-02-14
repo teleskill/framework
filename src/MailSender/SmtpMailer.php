@@ -7,11 +7,9 @@ use Symfony\Component\Mailer\Mailer as SymfonyMailer;
 use Symfony\Component\Mime\Address as SymfonyAddress;
 use Symfony\Component\Mime\Email as SymfonyEmail;
 use Teleskill\Framework\MailSender\Email;
-use Teleskill\Framework\MailSender\MailQueue;
 use Teleskill\Framework\MailSender\Mailer;
 use Teleskill\Framework\MailSender\Enums\MailEncryption;
 use Teleskill\Framework\MailSender\Enums\MailTransport;
-use Teleskill\Framework\MailSender\Enums\MailPriority;
 use Teleskill\Framework\Logger\Log;
 use Exception;
 

@@ -95,22 +95,23 @@ class Storage {
 
 		if (!isset($this->disks[$id])) {
 			if (isset($this->list[$id])) {
-				$params = $this->list[$id];
+				$storageData = $this->list[$id];
 
-				$driver = StorageDriver::from($params['driver']);
+				$driver = StorageDriver::from($storageData['driver']);
+				$settings = $storageData['settings'];
 
 				switch ($driver) {
 					case StorageDriver::LOCAL:
-						$disk = new LocalDisk($id, $params['config'], StoragePermissions::from($params['permissions']));
+						$disk = new LocalDisk($id, $settings);
 						break;
 					case StorageDriver::SFTP:
-						$disk = new SftpDisk($id, $params['config'], StoragePermissions::from($params['permissions']));
+						$disk = new SftpDisk($id, $settings);
 						break;
 					case StorageDriver::FTP:
-						$disk = new FtpDisk($id, $params['config'], StoragePermissions::from($params['permissions']));
+						$disk = new FtpDisk($id, $settings);
 						break;
 					case StorageDriver::S3:
-						$disk = new S3Disk($id, $params['config'], StoragePermissions::from($params['permissions']));
+						$disk = new S3Disk($id, $settings);
 						break;
 					default:
 						return null;

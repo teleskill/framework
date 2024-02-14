@@ -1,20 +1,20 @@
 <?php
 
-namespace Teleskill\Framework\Cache;
+namespace Teleskill\Framework\Redis;
 
 use Teleskill\Framework\Cache\RedisStore;
 use Teleskill\Framework\Cache\Enums\CacheDriver;
 use Teleskill\Framework\Redis\Enums\RedisNode;
 use Teleskill\Framework\Config\Config;
 
-class Cache {
+class Redis {
 
 	const LOGGER_NS = self::class;
 
 	protected string $default;
 	protected array $list = [];
 	protected array $stores = [];
-	private static Cache $instance;
+	private static Redis $instance;
 
 	private function __construct()
     {
@@ -26,13 +26,13 @@ class Cache {
 	*
 	* @return Singleton
 	*/
-	final public static function getInstance() : Cache {
+	final public static function getInstance() : Redis {
 		if (!isset(self::$instance)) {
             $class = get_called_class();
             
 			self::$instance = new $class();
 
-			$config = Config::get('framework', 'cache');
+			$config = Config::get('framework', 'redis');
 
 			self::$instance->default = $config['default'];
 			self::$instance->list = $config['stores'];
@@ -90,25 +90,18 @@ class Cache {
 
 		if (!isset($this->stores[$id])) {
 			if (isset($this->list[$id])) {
-				$params = $this->list[$id];
+				$storeData = $this->list[$id];
 
-				$driver = CacheDriver::from($params['driver']);
-
-				switch ($driver) {
-					case CacheDriver::REDIS:
-						$store = new RedisStore($id);
-						$store->prefix = $params['prefix'] ?? NULL;
-						$store->tenancy = $params['tenancy'] ?? false;
-						$store->db = $params['db'];
-						$store->master = $params['nodes'][RedisNode::MASTER->value];
-						$store->replica = $params['nodes'][RedisNode::READ_ONLY_REPLICA->value] ?? NULL;
-
-						$this->stores[$id] = $store;
-						
-						break;
-					default:
-						return null;
+				$store = new RedisStore($id);
+				if ($store->prefix = $storeData['prefix'] ?? null) {
+					$store->prefix = str_replace(['app_id', 'tenant_id'], ['lms', '2'], $store->prefix);
 				}
+				$store->db = $storeData['db'] ?? 0;
+				$store->master = $storeData['nodes'][RedisNode::MASTER->value];
+				$store->replica = $storeData['nodes'][RedisNode::READ_ONLY_REPLICA->value] ?? null;
+
+				$this->stores[$id] = $store;
+				
 			} else {
 				return null;
 			}

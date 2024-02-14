@@ -84,22 +84,23 @@ class MailSender {
 
 		if (!isset($this->mailers[$id])) {
 			if (isset($this->list[$id])) {
-				$params = $this->list[$id];
+				$mailerData = $this->list[$id];
 
-				$transport = MailTransport::from($params['transport']);
+				$transport = MailTransport::from($mailerData['transport']);
+				$settings = $mailerData['settings'];
 
 				switch ($transport) {
 					case MailTransport::SMTP:
 						$mailer = new SmtpMailer($id);
-						$mailer->host = $params['host'];
-						$mailer->port = $params['port'];
-						$mailer->encryption = MailEncryption::from($params['encryption']);
-						$mailer->username = $params['username'];
-						$mailer->password = $params['password'];
-						$mailer->from = $params['from'];
-						$mailer->fromName = $params['from_name'];
-						$mailer->apiUrl = $params['api_url'];
-						$mailer->apiKey = $params['api_key'];
+						$mailer->host = $settings['host'];
+						$mailer->port = $settings['port'];
+						$mailer->encryption = MailEncryption::from($settings['encryption']);
+						$mailer->username = $settings['username'];
+						$mailer->password = $settings['password'];
+						$mailer->from = $settings['from'] ?? null;
+						$mailer->fromName = $settings['from_name'] ?? null;
+						$mailer->apiUrl = $settings['api_url'] ?? null;
+						$mailer->apiKey = $settings['api_key'] ?? null;
 
 						$this->mailers[$id] = $mailer;
 

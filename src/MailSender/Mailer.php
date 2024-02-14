@@ -8,9 +8,7 @@ abstract class Mailer {
 
     const LOGGER_NS = self::class;
 
-    const CACHE_PREFIX = 'mailsender:';
-
-	protected ?string $id;
+    protected ?string $id;
     public MailTransport $transport;
     public string $from;
     public string $fromName;

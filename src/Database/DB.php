@@ -98,13 +98,12 @@ class DB {
     }
 
 	public function addConnection(string $id, DBHandler $handler, array $settings) : void {
-		
-
 		switch($handler) {
 			case DBHandler::STANDARD:
 				$this->connections[$id] = new Connection($id, $settings);
 				break;
 			case DBHandler::ELOQUENT:
+				$settings['database'] = str_replace(['app_id', 'tenant_id'], ['lms', '2'], $settings['database']);
 				$this->connections[$id] = new Eloquent($id, $settings);
 				break;
 		}		

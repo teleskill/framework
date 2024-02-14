@@ -3,21 +3,35 @@
 namespace Teleskill\Framework\Storage;
 
 use League\Flysystem\Local\LocalFilesystemAdapter;
-use Teleskill\Framework\Storage\Enums\StoragePermissions;
 use Teleskill\Framework\Storage\Disk;
 
 final class LocalDisk extends Disk {
 
 	const LOGGER_NS = self::class;
+
+	/*
+	'local' => [
+		'driver' => StorageDriver::LOCAL->value,
+		'settings' => [
+			'prefix' => '{app_id}/{tenant_id}:',
+			'permissions' => StoragePermissions::WRITE->value,
+			'config' => [
+				'root' => __DIR__ . '/storage', // required
+			]
+		]
+	]
+	*/
 	
 	protected string $root;
 
-	public function __construct(?string $id, array $config, StoragePermissions $permissions, ?string $prefix = null, ?bool $tenancy = false) {
+	public function __construct(?string $id, $settings) {
+		$config = $settings['config'];
+
 		$this->root = $config['root'];
 
 		$adapter = new LocalFilesystemAdapter($config['root']);
 
-		parent::__construct($id, $adapter, $permissions, $prefix, $tenancy);
+		parent::__construct($id, $settings, $adapter);
 	}
 
 	public function getFullPathName(string $path) : string|null {

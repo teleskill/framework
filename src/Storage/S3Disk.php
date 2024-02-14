@@ -17,18 +17,23 @@ final class S3Disk extends Disk {
 	/*
 	's3' => [
 		'driver' => StorageDriver::S3->value,
-		'permissions' => StoragePermissions::WRITE->value,
-		'config' => [
-			'accessKeyId' => '',
-			'accessKeySecret' => '',
-			'region' => '',
-			'version' => '',
-			'bucket' => ''
+		'settings' => [
+			'prefix' => '{app_id}/{tenant_id}:',
+			'permissions' => StoragePermissions::WRITE->value,
+			'config' => [
+				'accessKeyId' => '',
+				'accessKeySecret' => '',
+				'region' => '',
+				'version' => '',
+				'bucket' => ''
+			]
 		]
 	]
 	*/
 
-	public function __construct(?string $id, array $config, StoragePermissions $permissions, ?string $prefix = null, ?bool $tenancy = false) {
+	public function __construct(?string $id, $settings) {
+		$config = $settings['config'];
+
 		Log::debug([self::LOGGER_NS, __FUNCTION__], [
 			'credentials' => [
 				'key'    => $config['access_key_id'],
@@ -63,7 +68,7 @@ final class S3Disk extends Disk {
 			$config['options'] ?? null
 		);
 
-		parent::__construct($id, $adapter, $permissions, $prefix, $tenancy);
+		parent::__construct($id, $settings, $adapter);
 	}
 
 	protected function getFullPathName(string $path) : string|null {

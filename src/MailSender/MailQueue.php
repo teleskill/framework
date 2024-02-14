@@ -12,8 +12,8 @@ use Teleskill\Framework\MailSender\Enums\MailEncryption;
 use Teleskill\Framework\MailSender\Enums\MailPriority;
 use Teleskill\Framework\MailSender\Enums\MailSend;
 use Teleskill\Framework\MailSender\Email;
-use Teleskill\Framework\Cache\Cache;
 use Teleskill\Framework\Logger\Log;
+use Teleskill\Framework\Redis\Redis;
 use Teleskill\Framework\WebApi\Enums\WebApiMethod;
 use Teleskill\Framework\WebApi\Enums\WebApiType;
 use Teleskill\Framework\WebApi\WebApi;
@@ -22,7 +22,7 @@ class MailQueue {
 
 	const LOGGER_NS = self::class;
 
-	protected string $cache;
+	protected string $redisStore;
 
 	private static MailQueue $instance;
 
@@ -37,9 +37,7 @@ class MailQueue {
             
 			self::$instance = new $class();
 
-			$config = Config::get('framework', 'mailSender');
-
-			self::$instance->cache = $config['cache'];
+			self::$instance->redisStore = Config::get('framework', 'mailSender')['redisStore'];
 		}
 
 		return self::$instance;
@@ -140,9 +138,9 @@ class MailQueue {
             'priority' => $email->priority->value
         ];
 
-        $hash = 'queue:' . $email->priority->value;
+        $hash = 'mailsender:queue:' . $email->priority->value;
 
-        Cache::store($instance->cache)->rPush($hash, json_encode($data));
+        Redis::store($instance->redisStore)->rPush($hash, json_encode($data));
                   
         Log::info([self::LOGGER_NS, __FUNCTION__], $data);
 
@@ -152,9 +150,9 @@ class MailQueue {
     public static function send(MailPriority $priority) : MailSend {
         $instance = self::getInstance();
 
-        $hash = 'queue:' . $priority->value;
+        $hash = 'mailsender:queue:' . $priority->value;
 
-        $data = Cache::store($instance->cache)->lPop($hash);
+        $data = Redis::store($instance->cache)->lPop($hash);
 
         try {
             if ($data) {

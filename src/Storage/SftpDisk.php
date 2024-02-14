@@ -14,18 +14,23 @@ final class SftpDisk extends Disk {
 	/*
 	'sftp' => [
 		'driver' => StorageDriver::SFTP->value,
-		'permissions' => StoragePermissions::WRITE->value,
-		'config' => [
-			'host' => '', //(required)
-			'username' => '', //(required)
-			'password' => '', //(optional, default: null) set to null if privateKey is used
-			'port' => 22,
-			'root' => ''
+		'settings' => [
+			'prefix' => '{app_id}/{tenant_id}:',
+			'permissions' => StoragePermissions::WRITE->value,
+			'config' => [
+				'host' => '', //(required)
+				'username' => '', //(required)
+				'password' => '', //(optional, default: null) set to null if privateKey is used
+				'port' => 22,
+				'root' => ''
+			]
 		]
 	]
 	*/
 
-	public function __construct(?string $id, array $config, StoragePermissions $permissions, ?string $prefix = null, ?bool $tenancy = false) {
+	public function __construct(?string $id, $settings) {
+		$config = $settings['config'];
+
 		$adapter = new SftpAdapter(
 			new SftpConnectionProvider(
 				$config['host'], //(required)
@@ -43,7 +48,7 @@ final class SftpDisk extends Disk {
 			$config['root'], // root path (required)
 		);
 
-		parent::__construct($id, $adapter, $permissions, $prefix, $tenancy);
+		parent::__construct($id, $settings, $adapter);
 	}
 
 	protected function getFullPathName(string $path) : string|null {
