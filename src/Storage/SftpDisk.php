@@ -15,7 +15,7 @@ final class SftpDisk extends Disk {
 	'sftp' => [
 		'driver' => StorageDriver::SFTP->value,
 		'settings' => [
-			'prefix' => '{app_id}/{tenant_id}:',
+			'prefix' => '{app_id}:',
 			'permissions' => StoragePermissions::WRITE->value,
 			'config' => [
 				'host' => '', //(required)

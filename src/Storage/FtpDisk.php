@@ -15,7 +15,7 @@ final class FtpDisk extends Disk {
 	'ftp' => [
 		'driver' => StorageDriver::FTP->value,
 		'settings' => [
-			'prefix' => '{app_id}/{tenant_id}:',
+			'prefix' => '{app_id}',
 			'permissions' => StoragePermissions::WRITE->value,
 			'config' => [
 				'host' => 'hostname', // required

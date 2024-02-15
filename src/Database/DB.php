@@ -5,6 +5,7 @@ namespace Teleskill\Framework\Database;
 use Teleskill\Framework\Database\Connection;
 use Teleskill\Framework\Database\Eloquent;
 use Teleskill\Framework\Config\Config;
+use Teleskill\Framework\Core\App;
 use Teleskill\Framework\Database\Enums\DBHandler;
 
 
@@ -103,7 +104,7 @@ class DB {
 				$this->connections[$id] = new Connection($id, $settings);
 				break;
 			case DBHandler::ELOQUENT:
-				$settings['database'] = str_replace(['app_id', 'tenant_id'], ['lms', '2'], $settings['database']);
+				$settings['database'] = str_replace(['app_id'], [App::id()], $settings['database']);
 				$this->connections[$id] = new Eloquent($id, $settings);
 				break;
 		}		

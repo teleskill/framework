@@ -18,7 +18,7 @@ final class S3Disk extends Disk {
 	's3' => [
 		'driver' => StorageDriver::S3->value,
 		'settings' => [
-			'prefix' => '{app_id}/{tenant_id}:',
+			'prefix' => '{app_id}:',
 			'permissions' => StoragePermissions::WRITE->value,
 			'config' => [
 				'accessKeyId' => '',

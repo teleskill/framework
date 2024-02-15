@@ -5,6 +5,7 @@ namespace Teleskill\Framework\Redis;
 use Teleskill\Framework\Redis\RedisConnection;
 use Teleskill\Framework\Redis\Enums\RedisNode;
 use Teleskill\Framework\Config\Config;
+use Teleskill\Framework\Core\App;
 
 class Redis {
 
@@ -93,7 +94,7 @@ class Redis {
 
 				$connection = new RedisConnection($id);
 				if ($connection->prefix = $connectionData['prefix'] ?? null) {
-					$connection->prefix = str_replace(['app_id', 'tenant_id'], ['lms', '2'], $connection->prefix);
+					$connection->prefix = str_replace(['app_id'], [App::id()], $connection->prefix);
 				}
 				$connection->db = $connectionData['db'] ?? 0;
 				$connection->master = $connectionData['nodes'][RedisNode::MASTER->value];

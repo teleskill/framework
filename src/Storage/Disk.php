@@ -22,6 +22,7 @@ use League\Flysystem\FileAttributes;
 use Teleskill\Framework\Storage\Enums\StoragePermissions;
 use Teleskill\Framework\Logger\Log;
 use Exception;
+use Teleskill\Framework\Core\App;
 
 abstract class Disk {
 
@@ -36,7 +37,7 @@ abstract class Disk {
 		$this->id = $id;
 		$this->permissions = StoragePermissions::from($settings['permissions'] ?? StoragePermissions::WRITE);
 		if ($this->prefix = $settings['prefix'] ?? null) {
-			$this->prefix = str_replace(['app_id', 'tenant_id'], ['lms', '2'], $this->prefix);
+			$this->prefix = str_replace(['app_id'], [App::id()], $this->prefix);
 		}
 
 		// Turn it into a path-prefixed adapter
