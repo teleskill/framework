@@ -8,6 +8,8 @@ use Teleskill\Framework\Redis\Enums\RedisNode;
 use Redis as PhpRedis;
 use Exception;
 
+use function PHPSTORM_META\type;
+
 final class RedisConnection  {
 
 	const LOGGER_NS = self::class;
@@ -81,6 +83,10 @@ final class RedisConnection  {
     
     public function __call(string $method, array $arguments) : mixed {
 		Log::debug([self::LOGGER_NS, __FUNCTION__], ['prefix' => $this->prefix, 'method' => $method, 'arguments' => $arguments]);
+
+		if ($arguments[0] && $this->prefix) {
+			$arguments[0] = $this->prefix . ':' . $arguments[0];
+		}
 
 		return $this->conn(RedisNode::MASTER)->$method(...$arguments);
     }

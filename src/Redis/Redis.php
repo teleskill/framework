@@ -93,7 +93,7 @@ class Redis {
 				$settings = $this->list[$id];
 
 				$connection = new RedisConnection($id);
-				$connection->prefix = ($settings['prefix'] ?? App::id()) . ':';
+				$connection->prefix = ($settings['prefix'] ?? App::id());
 				$connection->db = $settings['db'] ?? 0;
 				$connection->master = $settings['nodes'][RedisNode::MASTER->value];
 				$connection->replica = $settings['nodes'][RedisNode::READ_ONLY_REPLICA->value] ?? null;
