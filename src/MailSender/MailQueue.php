@@ -158,7 +158,7 @@ class MailQueue {
 
         $hash = 'mailsender:queue:' . $priority->value;
 
-        $data = Redis::connection($instance->cache)->lPop($hash);
+        $data = Redis::connection($instance->redis)->lPop($hash);
 
         try {
             if ($data) {

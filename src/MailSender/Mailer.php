@@ -20,13 +20,5 @@ abstract class Mailer {
 	public function __construct(?string $id) {
 		$this->id = $id;
     }
-
-    public function send(Email $email) : bool {
-        if ($this->enqueue) {
-            MailQueue::append($this, $email);
-
-            return true;
-        }
-    }
     
 }
