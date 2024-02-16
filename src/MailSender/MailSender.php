@@ -98,8 +98,6 @@ class MailSender {
 						$mailer->password = $settings['password'];
 						$mailer->from = $settings['from'] ?? null;
 						$mailer->fromName = $settings['from_name'] ?? null;
-						$mailer->apiUrl = $settings['api_url'] ?? null;
-						$mailer->apiKey = $settings['api_key'] ?? null;
 
 						$this->mailers[$id] = $mailer;
 

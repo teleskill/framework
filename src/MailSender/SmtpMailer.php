@@ -24,8 +24,6 @@ final class SmtpMailer extends Mailer {
     public string $password;
     public string $from;
     public string $fromName;
-    public string $apiUrl;
-    public string $apiKey;
 
     public function __construct(?string $id = null) {
 		parent::__construct($id);

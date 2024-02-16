@@ -23,6 +23,8 @@ class MailQueue {
 	const LOGGER_NS = self::class;
 
 	protected string $redis;
+    protected string $apiUrl;
+    protected string $apiKey;
 
 	private static MailQueue $instance;
 
@@ -38,6 +40,8 @@ class MailQueue {
 			self::$instance = new $class();
 
 			self::$instance->redis = Config::get('framework', 'mailSender')['redis'];
+            self::$instance->apiUrl = Config::get('framework', 'mailSender')['api_url'] ?? null;
+			self::$instance->apiKey = Config::get('framework', 'mailSender')['api_key'] ?? null;
 		}
 
 		return self::$instance;
@@ -62,6 +66,8 @@ class MailQueue {
 	}
 
     public static function enqueue(mixed $mailer, Email $email) : bool {
+        $instance = self::getInstance();
+
         $data = [];
 
         switch(get_class($mailer)) {
@@ -92,7 +98,7 @@ class MailQueue {
             ]
         ];
 
-        $webApi = new WebApi(WebApiMethod::PUT, $mailer->apiUrl, WebApiType::RAW_JSON);
+        $webApi = new WebApi(WebApiMethod::PUT, $instance->apiUrl, WebApiType::RAW_JSON);
         $webApi->body()->set($data);
         $webApiResponse = $webApi->send();
 
