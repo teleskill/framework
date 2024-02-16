@@ -49,7 +49,7 @@ abstract class Disk {
 		if ($this->permissions == StoragePermissions::READ_ONLY) {
 			$adapter = new ReadOnlyFilesystemAdapter($adapter);
 		}
-
+		
 		$this->filesystem = new Filesystem($adapter);
 	}
 
