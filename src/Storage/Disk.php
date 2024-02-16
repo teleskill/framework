@@ -21,8 +21,8 @@ use League\Flysystem\UnableToCopyFile;
 use League\Flysystem\FileAttributes;
 use Teleskill\Framework\Storage\Enums\StoragePermissions;
 use Teleskill\Framework\Logger\Log;
-use Exception;
 use Teleskill\Framework\Core\App;
+use Exception;
 
 abstract class Disk {
 
@@ -36,9 +36,7 @@ abstract class Disk {
 	public function __construct(?string $id, array $settings, FilesystemAdapter $adapter) {
 		$this->id = $id;
 		$this->permissions = StoragePermissions::from($settings['permissions'] ?? StoragePermissions::WRITE);
-		if ($this->prefix = $settings['prefix'] ?? null) {
-			$this->prefix = str_replace(['app_id'], [App::id()], $this->prefix);
-		}
+		$this->prefix = $settings['prefix'] ?? null;
 
 		// Turn it into a path-prefixed adapter
 		if ($this->prefix) {

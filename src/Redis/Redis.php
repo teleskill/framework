@@ -90,15 +90,13 @@ class Redis {
 
 		if (!isset($this->connections[$id])) {
 			if (isset($this->list[$id])) {
-				$connectionData = $this->list[$id];
+				$settings = $this->list[$id];
 
 				$connection = new RedisConnection($id);
-				if ($connection->prefix = $connectionData['prefix'] ?? null) {
-					$connection->prefix = str_replace(['app_id'], [App::id()], $connection->prefix);
-				}
-				$connection->db = $connectionData['db'] ?? 0;
-				$connection->master = $connectionData['nodes'][RedisNode::MASTER->value];
-				$connection->replica = $connectionData['nodes'][RedisNode::READ_ONLY_REPLICA->value] ?? null;
+				$connection->prefix = ($settings['prefix'] ?? App::id()) . ':';
+				$connection->db = $settings['db'] ?? 0;
+				$connection->master = $settings['nodes'][RedisNode::MASTER->value];
+				$connection->replica = $settings['nodes'][RedisNode::READ_ONLY_REPLICA->value] ?? null;
 
 				$this->connections[$id] = $connection;
 				
