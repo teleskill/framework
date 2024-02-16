@@ -84,10 +84,9 @@ class MailSender {
 
 		if (!isset($this->mailers[$id])) {
 			if (isset($this->list[$id])) {
-				$mailerData = $this->list[$id];
+				$settings = $this->list[$id];
 
-				$transport = MailTransport::from($mailerData['transport']);
-				$settings = $mailerData['settings'];
+				$transport = MailTransport::from($settings['transport']);
 
 				switch ($transport) {
 					case MailTransport::SMTP:
