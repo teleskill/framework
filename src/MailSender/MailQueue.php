@@ -144,7 +144,7 @@ class MailQueue {
             'priority' => $email->priority->value
         ];
 
-        $hash = 'mailsender:queue:' . $email->priority->value;
+        $hash = 'queue:' . $email->priority->value;
 
         Redis::connection($instance->redis)->rPush($hash, json_encode($data));
                   
@@ -156,7 +156,7 @@ class MailQueue {
     public static function send(MailPriority $priority) : MailSend {
         $instance = self::getInstance();
 
-        $hash = 'mailsender:queue:' . $priority->value;
+        $hash = 'queue:' . $priority->value;
 
         $data = Redis::connection($instance->redis)->lPop($hash);
 
