@@ -3,11 +3,7 @@
 namespace Teleskill\Framework\Database;
 
 use Teleskill\Framework\Database\Connection;
-use Teleskill\Framework\Database\Eloquent;
 use Teleskill\Framework\Config\Config;
-use Teleskill\Framework\Core\App;
-use Teleskill\Framework\Database\Enums\DBHandler;
-
 
 class DB {
 
@@ -89,7 +85,7 @@ class DB {
 
 		if (!isset($this->connections[$id])) {
 			if (isset($this->list[$id])) {
-				$this->addConnection($id, DBHandler::tryFrom($connection['handler'] ?? DBHandler::STANDARD->value), $this->list[$id]['settings']);
+				$this->addConnection($id, $this->list[$id]);
 			} else {
 				return null;
 			}
@@ -98,23 +94,8 @@ class DB {
         return $this->connections[$id];
     }
 
-	public function addConnection(string $id, DBHandler $handler, array $settings) : void {
-		switch($handler) {
-			case DBHandler::STANDARD:
-				$this->connections[$id] = new Connection($id, $settings);
-				break;
-			case DBHandler::ELOQUENT:
-				$settings['database'] = str_replace(['app_id'], [App::id()], $settings['database']);
-				$this->connections[$id] = new Eloquent($id, $settings);
-				break;
-		}		
+	public function addConnection(string $id, array $settings) : void {
+		$this->connections[$id] = new Connection($id, $settings);
     }
 
-	public static function boot() : void {
-		$instance = self::getInstance();
-
-		foreach($instance->list as $id => $connection) {
-			$instance->addConnection($id, (DBHandler::tryFrom($connection['handler']) ?? DBHandler::STANDARD), $connection['settings']);
-		}
-	}
 }

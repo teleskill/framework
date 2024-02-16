@@ -77,7 +77,7 @@ class Client {
             }
 
             // try to lock new access token request
-            if (!Cache::store($this->cache)->set(self::CACHE_PREFIX . $this->id . ':access_token_pending', 1, $this->tokenRequestTimeout, true)) {
+            if (!Cache::store($this->cache)->add(self::CACHE_PREFIX . $this->id . ':access_token_pending', 1, $this->tokenRequestTimeout, true)) {
                 $x = 1;
                 do {
                     // wait a second before each retry
@@ -135,10 +135,10 @@ class Client {
                 Log::debug([self::LOGGER_NS, $this->id, __FUNCTION__], 'access token: ' . $accessToken);
 
                 // put access token into the cache
-                Cache::store($this->cache)->set(self::CACHE_PREFIX . $this->id . ':access_token', $accessToken, $ttl);
+                Cache::store($this->cache)->put(self::CACHE_PREFIX . $this->id . ':access_token', $accessToken, $ttl);
 
                 // delete pending access token request
-                Cache::store($this->cache)->del(self::CACHE_PREFIX . $this->id . ':access_token_pending');
+                Cache::store($this->cache)->forget(self::CACHE_PREFIX . $this->id . ':access_token_pending');
 
                 return $accessToken;
             }
