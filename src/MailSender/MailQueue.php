@@ -23,8 +23,8 @@ class MailQueue {
 	const LOGGER_NS = self::class;
 
 	protected string $redis;
-    protected string $apiUrl;
-    protected string $apiKey;
+    protected ?string $apiUrl;
+    protected ?string $apiKey;
 
 	private static MailQueue $instance;
 
