@@ -33,10 +33,10 @@ abstract class Disk {
 	protected ?string $id;
 	protected ?string $prefix;
 
-	public function __construct(?string $id, array $settings, FilesystemAdapter $adapter) {
+	public function __construct(?string $id, array $storageData, FilesystemAdapter $adapter) {
 		$this->id = $id;
-		$this->permissions = StoragePermissions::from($settings['permissions'] ?? StoragePermissions::WRITE);
-		$this->prefix = $settings['prefix'] ?? null;
+		$this->permissions = StoragePermissions::from($storageData['permissions'] ?? StoragePermissions::WRITE);
+		$this->prefix = $storageData['prefix'] ?? null;
 
 		// Turn it into a path-prefixed adapter
 		if ($this->prefix) {

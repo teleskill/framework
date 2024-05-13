@@ -37,8 +37,8 @@ final class FtpDisk extends Disk {
 	]
 	*/
 
-	public function __construct(?string $id, $settings) {
-		$config = $settings['config'];
+	public function __construct(?string $id, $storageData) {
+		$config = $storageData['config'] ?? $storageData['settings'];
 
 		$adapter = new FtpAdapter(
 			// Connection options
@@ -60,7 +60,7 @@ final class FtpDisk extends Disk {
 			])
 		);
 
-		parent::__construct($id, $settings, $adapter);
+		parent::__construct($id, $storageData, $adapter);
 	}
 
 	protected function getFullPathName(string $path) : string|null {

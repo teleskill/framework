@@ -98,20 +98,19 @@ class Storage {
 				$storageData = $this->list[$id];
 
 				$driver = StorageDriver::from($storageData['driver']);
-				$settings = $storageData['settings'];
 
 				switch ($driver) {
 					case StorageDriver::LOCAL:
-						$disk = new LocalDisk($id, $settings);
+						$disk = new LocalDisk($id, $storageData);
 						break;
 					case StorageDriver::SFTP:
-						$disk = new SftpDisk($id, $settings);
+						$disk = new SftpDisk($id, $storageData);
 						break;
 					case StorageDriver::FTP:
-						$disk = new FtpDisk($id, $settings);
+						$disk = new FtpDisk($id, $storageData);
 						break;
 					case StorageDriver::S3:
-						$disk = new S3Disk($id, $settings);
+						$disk = new S3Disk($id, $storageData);
 						break;
 					default:
 						return null;
