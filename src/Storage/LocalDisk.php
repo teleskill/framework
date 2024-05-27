@@ -12,12 +12,10 @@ final class LocalDisk extends Disk {
 	/*
 	'local' => [
 		'driver' => StorageDriver::LOCAL->value,
-		'settings' => [
-			'prefix' => '{app_id}:',
-			'permissions' => StoragePermissions::WRITE->value,
-			'config' => [
-				'root' => __DIR__ . '/storage', // required
-			]
+		'prefix' => '{app_id}:',
+		'permissions' => StoragePermissions::WRITE->value,
+		'config' => [
+			'root' => __DIR__ . '/storage', // required
 		]
 	]
 	*/

@@ -14,16 +14,14 @@ final class SftpDisk extends Disk {
 	/*
 	'sftp' => [
 		'driver' => StorageDriver::SFTP->value,
-		'settings' => [
-			'prefix' => '{app_id}:',
-			'permissions' => StoragePermissions::WRITE->value,
-			'config' => [
-				'host' => '', //(required)
-				'username' => '', //(required)
-				'password' => '', //(optional, default: null) set to null if privateKey is used
-				'port' => 22,
-				'root' => ''
-			]
+		'prefix' => '{app_id}:',
+		'permissions' => StoragePermissions::WRITE->value,
+		'config' => [
+			'host' => '', //(required)
+			'username' => '', //(required)
+			'password' => '', //(optional, default: null) set to null if privateKey is used
+			'port' => 22,
+			'root' => ''
 		]
 	]
 	*/
