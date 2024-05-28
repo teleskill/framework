@@ -265,6 +265,10 @@ class Connection {
 		return ($value == 1 || $value == '1');
 	}
 
+	public function setBoolean(mixed $value) : bool {
+		return $value;
+	}
+
 	public function getDate(?string $date) : CarbonDateTime|null {
 		return App::stringToDate($date, $this->inputDateFormat);
 	}
