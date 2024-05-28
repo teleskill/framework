@@ -2,6 +2,7 @@
 
 namespace Teleskill\Framework\Cache;
 
+use Closure;
 use Teleskill\Framework\Core\App;
 
 abstract class Store {
@@ -32,9 +33,9 @@ abstract class Store {
 
 	abstract public function pull(string $key) : mixed;
 
-    abstract public function remember(string $key, int $ttl, mixed $default = null) : bool;
+    abstract public function remember(string $key, int $ttl, Closure $callback) : mixed;
 
-	abstract public function rememberForever(string $key, mixed $default = null) : bool;
+	abstract public function rememberForever(string $key, Closure $callback) : mixed;
 
 	abstract public function forever(string $key, mixed $value) : bool;
 

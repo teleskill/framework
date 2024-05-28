@@ -2,6 +2,7 @@
 
 namespace Teleskill\Framework\Cache;
 
+use Closure;
 use Teleskill\Framework\Logger\Log;
 use Teleskill\Framework\Cache\Store;
 use Teleskill\Framework\Redis\Redis;
@@ -149,21 +150,25 @@ final class RedisStore extends Store {
 		return null;
 	}
 
-    public function remember(string $key, int $ttl, mixed $value = null) : bool {
+    public function remember(string $key, int $ttl, Closure $callback): mixed {
 		try {
 			$hash = $this->hashPrefix($key);
 
-			$data = serialize($value);
+			if (!$value = $this->connection->get($hash)) {
+				$value = serialize($callback($this));
 
-			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $data, 'ttl' => $ttl]);
+				Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $value, 'ttl' => $ttl]);
 
-			$options = [];
+				$options = [];
 
-			if ($ttl) {
-				$options['EX'] = $ttl;
+				if ($ttl) {
+					$options['EX'] = $ttl;
+				}
+
+				$this->connection->set($hash, $value, $options);
 			}
-		
-			return $this->connection->set($hash, $data, $options);
+
+			return $value;
 
 		} catch (Exception $e) {
 			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
@@ -172,15 +177,19 @@ final class RedisStore extends Store {
 		return false;
 	}
 
-	public function rememberForever(string $key, mixed $value = null) : bool {
+	public function rememberForever(string $key, Closure $callback): mixed {
 		try {
 			$hash = $this->hashPrefix($key);
 
-			$data = serialize($value);
+			if (!$value = $this->connection->get($hash)) {
+				$value = serialize($callback($this));
 
-			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $data]);
+				Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $value, 'ttl' => $ttl]);
 
-			return $this->connection->set($hash, $data);
+				$this->connection->set($hash, $value);
+			}
+
+			return $value;
 
 		} catch (Exception $e) {
 			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
