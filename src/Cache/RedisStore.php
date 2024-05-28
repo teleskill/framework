@@ -184,7 +184,7 @@ final class RedisStore extends Store {
 			if (!$value = $this->connection->get($hash)) {
 				$value = serialize($callback($this));
 
-				Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $value, 'ttl' => $ttl]);
+				Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $value]);
 
 				$this->connection->set($hash, $value);
 			}
