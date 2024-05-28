@@ -154,7 +154,9 @@ final class RedisStore extends Store {
 		try {
 			$hash = $this->hashPrefix($key);
 
-			if (!$value = $this->connection->get($hash)) {
+			if ($value = $this->connection->get($hash)) {
+				return unserialize($value);
+			} else {
 				$value = serialize($callback($this));
 
 				Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $value, 'ttl' => $ttl]);
@@ -166,10 +168,10 @@ final class RedisStore extends Store {
 				}
 
 				$this->connection->set($hash, $value, $options);
+
+				return $value;
 			}
-
-			return $value;
-
+		
 		} catch (Exception $e) {
 			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
 		}
@@ -181,16 +183,18 @@ final class RedisStore extends Store {
 		try {
 			$hash = $this->hashPrefix($key);
 
-			if (!$value = $this->connection->get($hash)) {
+			if ($value = $this->connection->get($hash)) {
+				return unserialize($value);
+			} else {
 				$value = serialize($callback($this));
 
 				Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $value]);
 
 				$this->connection->set($hash, $value);
+
+				return $value;
 			}
-
-			return $value;
-
+		
 		} catch (Exception $e) {
 			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
 		}
