@@ -31,11 +31,13 @@ abstract class Disk {
 	public StoragePermissions $permissions;
 	protected ?string $id;
 	protected ?string $prefix;
+	protected ?string $url;
 
 	public function __construct(?string $id, array $storageData, FilesystemAdapter $adapter) {
 		$this->id = $id;
 		$this->permissions = StoragePermissions::from($storageData['permissions'] ?? StoragePermissions::WRITE);
 		$this->prefix = $storageData['prefix'] ?? null;
+		$this->url = $storageData['url'] ?? null;
 
 		// Turn it into a path-prefixed adapter
 		if ($this->prefix) {
@@ -287,7 +289,30 @@ abstract class Disk {
 		return false;
 	}
 
-	abstract public function moveUploadedFile($source_file, $destinaton_file);
+	public function moveUploadedFile(string $source_file, string $destinaton_file): bool {
+		$stream = fopen($source_file, 'r+');
+
+		$this->writeStream($destinaton_file, $stream);
+
+		if (is_resource($stream)) {
+			fclose($stream);
+		}
+
+		return true;
+	}
+
+	public function url(?string $path = null): string|null {
+		$url = $this->url;
+
+		if ($url && $path) {
+			$url = $url . '/' . $path;
+			$url = preg_replace('/([^:])(\/{2,})/', '$1/', $url); 
+		}
+
+		return $url;
+	}
+
+	abstract public function download(string $path);
 
 	abstract protected function getFullPathName(string $path) : string|null;
 

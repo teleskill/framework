@@ -65,4 +65,8 @@ final class FtpDisk extends Disk {
 		return null;
 	}
 
+	public function download(string $path) {
+
+	}
+
 }

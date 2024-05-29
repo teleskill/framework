@@ -53,4 +53,8 @@ final class SftpDisk extends Disk {
 		return null;
 	}
 
+	public function download(string $path) {
+
+	}
+
 }
