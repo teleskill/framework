@@ -6,7 +6,6 @@ use League\Flysystem\FilesystemException;
 use League\Flysystem\MountManager;
 use Teleskill\Framework\Config\Config;
 use Teleskill\Framework\Storage\Enums\StorageDriver;
-use Teleskill\Framework\Storage\Enums\StoragePermissions;
 use Teleskill\Framework\Storage\LocalDisk;
 use Teleskill\Framework\Storage\SftpDisk;
 use Teleskill\Framework\Storage\FtpDisk;
@@ -16,6 +15,27 @@ use Teleskill\Framework\Logger\Log;
 class Storage {
 
 	const LOGGER_NS = self::class;
+
+	const MIME_TYPES = [
+		'svg' => ['image/svg'],
+		'png' => ['image/png'],
+		'jpeg' => ['image/jpeg'],
+		'jpg' => ['image/jpeg'],
+		'pdf' => ['application/pdf'],
+		'mp4' => ['video/mp4'],
+		'doc' => ['application/msword', 'application/vnd.ms-office', 'application/octet-stream'],
+		'docx' => ['application/msword', 'application/vnd.ms-office', 'application/octet-stream', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+		'xls' => ['application/vnd.ms-excel', 'application/vnd.ms-office', 'application/octet-stream'],
+		'xlsx' => ['application/vnd.ms-office', 'application/vnd.ms-excel', 'application/octet-stream', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+		'pps' => ['application/vnd.ms-powerpoint', 'application/vnd.ms-office', 'application/mspowerpoint', 'application/octet-stream'],
+		'ppt' => ['application/vnd.ms-powerpoint', 'application/vnd.ms-office', 'application/mspowerpoint', 'application/powerpoint', 'application/x-mspowerpoint', 'application/octet-stream'],
+		'pptx' => ['application/vnd.ms-powerpoint', 'application/vnd.ms-office', 'application/mspowerpoint', 'application/powerpoint', 'application/x-mspowerpoint', 'application/octet-stream', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'],
+		'zip' => ['application/zip'],
+		'rar' => ['application/x-rar-compressed'],
+		'csv' => ['text/plain', 'text/csv'],
+		'txt' => ['text/plain'],
+		'default' => ['application/octet-stream']
+	];
 
 	protected ?string $default = null;
 	protected array $list = [];
