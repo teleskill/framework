@@ -73,4 +73,14 @@ final class S3Disk extends Disk {
 		return null;
 	}
 
+	public function moveUploadedFile($source_file, $destinaton_file) {
+		$stream = fopen($source_file, 'r+');
+
+		$this->writeStream($destinaton_file, $stream);
+		
+		if (is_resource($stream)) {
+			fclose($stream);
+		}
+	}
+
 }

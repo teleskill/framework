@@ -40,4 +40,8 @@ final class LocalDisk extends Disk {
 		}
 	}
 
+	public function moveUploadedFile($source_file, $destinaton_file) {
+
+	}
+
 }

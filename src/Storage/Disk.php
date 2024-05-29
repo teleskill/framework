@@ -21,7 +21,6 @@ use League\Flysystem\UnableToCopyFile;
 use League\Flysystem\FileAttributes;
 use Teleskill\Framework\Storage\Enums\StoragePermissions;
 use Teleskill\Framework\Logger\Log;
-use Teleskill\Framework\Core\App;
 use Exception;
 
 abstract class Disk {
@@ -287,6 +286,8 @@ abstract class Disk {
 
 		return false;
 	}
+
+	abstract public function moveUploadedFile($source_file, $destinaton_file);
 
 	abstract protected function getFullPathName(string $path) : string|null;
 
