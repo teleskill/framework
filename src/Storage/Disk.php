@@ -306,7 +306,7 @@ abstract class Disk {
 
 		if ($url && $path) {
 			$url = $url . '/' . $path;
-			$url = preg_replace('/([^:])(\/{2,})/', '$1/', $url); 
+			$url = preg_replace('/([^:])(\/{2,})/', '$1/', $url);
 		}
 
 		return $url;

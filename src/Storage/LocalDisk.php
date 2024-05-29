@@ -40,10 +40,6 @@ final class LocalDisk extends Disk {
 		}
 	}
 
-	public function moveUploadedFile(string $source_file, string $destinaton_file): bool {
-		return move_uploaded_file($source_file, $destinaton_file);
-	}
-
 	public function download(string $path) {
 
 	}
