@@ -48,13 +48,5 @@ final class SftpDisk extends Disk {
 
 		parent::__construct($id, $storageData, $adapter);
 	}
-
-	protected function getFullPathName(string $path) : string|null {
-		return null;
-	}
-
-	public function download(string $path) {
-
-	}
-
+	
 }

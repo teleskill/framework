@@ -22,6 +22,8 @@ use League\Flysystem\FileAttributes;
 use Teleskill\Framework\Storage\Enums\StoragePermissions;
 use Teleskill\Framework\Logger\Log;
 use Exception;
+use League\Flysystem\AwsS3V3\VisibilityConverter;
+use Teleskill\Framework\DateTime\CarbonDateTime;
 
 abstract class Disk {
 
@@ -32,12 +34,12 @@ abstract class Disk {
 	protected ?string $id;
 	protected ?string $prefix;
 	protected ?string $url;
+	protected ?VisibilityConverter $visibility;
 
 	public function __construct(?string $id, array $storageData, FilesystemAdapter $adapter) {
 		$this->id = $id;
 		$this->permissions = StoragePermissions::from($storageData['permissions'] ?? StoragePermissions::WRITE);
 		$this->prefix = $storageData['prefix'] ?? null;
-		$this->url = $storageData['url'] ?? null;
 
 		// Turn it into a path-prefixed adapter
 		if ($this->prefix) {
@@ -206,7 +208,7 @@ abstract class Disk {
 		return null;
 	}
 
-	public function setVisibility(string $path, string $visibility = null) : bool {
+	public function setVisibility(string $path, ?string $visibility = null) : bool {
 		try {
             $this->filesystem->setVisibility($path, 'private');
 
@@ -305,15 +307,30 @@ abstract class Disk {
 		$url = $this->url;
 
 		if ($url && $path) {
-			$url = $url . '/' . $path;
-			$url = preg_replace('/([^:])(\/{2,})/', '$1/', $url);
+			$url = $this->sanitizePath($url . '/' . $path);
 		}
 
 		return $url;
 	}
 
-	abstract public function download(string $path);
+	protected function sanitizePath(?string $url): string|null {
+		if ($url) {
+			return preg_replace('/([^:])(\/{2,})/', '$1/', $url);
+		} else {
+			return null;
+		}
+	}
 
-	abstract protected function getFullPathName(string $path) : string|null;
+	public function temporaryUrl(string $path, CarbonDateTime $expiresAt, array $options = []): string|null {
+		return null;
+	}
+
+	public function download(string $path, ?string $save_as = null): void {
+		
+	}
+
+	protected function getFullPathName(string $path) : string|null {
+		return null;
+	}
 
 }
