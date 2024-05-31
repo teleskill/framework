@@ -4,6 +4,7 @@ namespace Teleskill\Framework\Storage;
 
 use Aws\S3\S3Client;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
+use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
 use Teleskill\Framework\Config\Enums\Environment;
 use Teleskill\Framework\Core\App;
 use Teleskill\Framework\DateTime\CarbonDateTime;
@@ -27,30 +28,29 @@ final class S3Disk extends Disk {
 	's3' => [
 		'driver' => StorageDriver::S3->value,
 		'prefix' => '{app_id}:',
-		'permissions' => StoragePermissions::WRITE->value,
-		'config' => [
-			'accessKeyId' => '',
-			'accessKeySecret' => '',
-			'region' => '',
-			'version' => '',
-			'bucket' => ''
-		]
+		'permissions' => StoragePermissions::WRITE->value, // optional
+		'visibility' => StoragePVisibility::PUBLIC->value, // optional
+		'key' => '',
+		'secret' => '',
+		'region' => '',
+		'version' => '',
+		'bucket' => '',
+		'prefix' => '/uploads', // optional
+		'url' => 'https://www.google.it' // required for public visibility
 	]
 	*/
 
-	public function __construct(?string $id, $storageData) {
-		$config = $storageData['config'] ?? $storageData['settings'];
+	public function __construct(?string $id, array $data) {
+		parent::__construct($id, $data);
 
-		$this->key = $config['key'] ?? null;
-		$this->secret = $config['secret'] ?? null;
-		$this->endpoint = $config['endpoint'] ?? null;
-		$this->region = $config['region'];
-		$this->version = $config['version'] ?? null;
-		$this->bucket = $config['bucket'];
-		$this->prefix = $config['prefix'] ?? '';
-		$this->options = $config['options'] ?? [];
-		$this->visibility = $config['visibility'] ?? null;
-		$this->url = $config['url'] ?? null;
+		$this->key = $this->config['key'] ?? null;
+		$this->secret = $this->config['secret'] ?? null;
+		$this->endpoint = $this->config['endpoint'] ?? null;
+		$this->region = $this->config['region'];
+		$this->version = $this->config['version'] ?? null;
+		$this->bucket = $this->config['bucket'];
+		$this->prefix = $this->config['prefix'] ?? '';
+		$this->options = $this->config['options'] ?? [];
 
 		$s3Params = [];
 
@@ -73,8 +73,6 @@ final class S3Disk extends Disk {
 			$s3Params['version'] = $this->version;
 		}
 
-		Log::debug([self::LOGGER_NS, __FUNCTION__], $s3Params);
-
 		$this->s3Client = new S3Client($s3Params);
 
 		// The internal adapter
@@ -82,16 +80,11 @@ final class S3Disk extends Disk {
 			client: $this->s3Client, // S3Client
 			bucket: $this->bucket, // Bucket name
 			prefix: $this->prefix, // Optional path prefix
-			options: $this->options // Options
-			/*
-			// Visibility converter (League\Flysystem\AwsS3V3\VisibilityConverter)
-			new PortableVisibilityConverter(
-				$this->visibility
-			),
-			*/
+			options: $this->options, // Options
+			visibility: new PortableVisibilityConverter($this->visibility) // Visibility converter (League\Flysystem\AwsS3V3\VisibilityConverter)
 		);
 
-		parent::__construct($id, $storageData, $adapter);
+		$this->addFileSystem($adapter);
 	}
 
 	public function download(string $path, ?string $save_as = null): void {

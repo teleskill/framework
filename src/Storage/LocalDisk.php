@@ -15,24 +15,25 @@ final class LocalDisk extends Disk {
 
 	/*
 	'local' => [
-		'driver' => StorageDriver::LOCAL->value,
-		'prefix' => '{app_id}:',
-		'permissions' => StoragePermissions::WRITE->value,
-		'config' => [
-			'root' => __DIR__ . '/storage', // required
-		]
+		'driver' => StorageDriver::LOCAL->value, // required
+		'permissions' => StoragePermissions::WRITE->value, // optional
+		'visibility' => StorageVisibility::PUBLIC->value, // optional
+		'root' => __DIR__ . '/storage', // required
+		'prefix' => '/uploads', // optional
+		'url' => 'https://www.google.it' // required for public visibility
 	]
 	*/
 	
-	public function __construct(?string $id, $storageData) {
-		$config = $storageData['config'] ?? $storageData['settings'];
+	public function __construct(?string $id, array $data) {
+		parent::__construct($id, $data);
 
-		$this->root = $config['root'];
-		$this->url = $config['url'] ?? null;
+		$this->root = $this->config['root'];
 
-		$adapter = new LocalFilesystemAdapter($this->root);
+		$adapter = new LocalFilesystemAdapter(
+			location: $this->root
+		);
 
-		parent::__construct($id, $storageData, $adapter);
+		$this->addFileSystem($adapter);
 	}
 
 	public function getFullPathName(string $path) : string|null {

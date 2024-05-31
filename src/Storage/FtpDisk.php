@@ -14,51 +14,48 @@ final class FtpDisk extends Disk {
 	/*
 	'ftp' => [
 		'driver' => StorageDriver::FTP->value,
-		'prefix' => '{app_id}',
 		'permissions' => StoragePermissions::WRITE->value,
-		'config' => [
-			'host' => 'hostname', // required
-			'root' => '/root/path/', // required
-			'username' => 'username', // required
-			'password' => 'password', // required
-			'port' => 21,
-			'ssl' => false,
-			'timeout' => 90,
-			'utf8' => false,
-			'passive' => true,
-			'transferMode' => FTP_BINARY,
-			'systemType' => null, // 'windows' or 'unix'
-			'ignorePassiveAddress' => null, // true or false
-			'timestampsOnUnixListingsEnabled' => false, // true or false
-			'recurseManually' => true // true
-		]
+		'host' => 'hostname', // required
+		'root' => '/root/path/', // required
+		'username' => 'username', // required
+		'password' => 'password', // required
+		'port' => 21,
+		'ssl' => false,
+		'timeout' => 90,
+		'utf8' => false,
+		'passive' => true,
+		'transferMode' => FTP_BINARY,
+		'systemType' => null, // 'windows' or 'unix'
+		'ignorePassiveAddress' => null, // true or false
+		'timestampsOnUnixListingsEnabled' => false, // true or false
+		'recurseManually' => true // true
 	]
 	*/
 
-	public function __construct(?string $id, $storageData) {
-		$config = $storageData['config'] ?? $storageData['settings'];
+	public function __construct(?string $id, array $data) {
+		parent::__construct($id, $data);
 
 		$adapter = new FtpAdapter(
 			// Connection options
 			FtpConnectionOptions::fromArray([
-				'host' => $config['host'], // required
-				'root' => $config['root'], // required
-				'username' => $config['username'], // required
-				'password' => $config['password'], // required
-				'port' => $config['port'],
-				'ssl' => $config['ssl'],
-				'timeout' => $config['timeout'],
-				'utf8' => $config['utf8'],
-				'passive' => $config['passive'],
-				'transferMode' => $config['transferMode'],
-				'systemType' => $config['systemType'], // 'windows' or 'unix'
-				'ignorePassiveAddress' => $config['ignorePassiveAddress'], // true or false
-				'timestampsOnUnixListingsEnabled' => $config['timestampsOnUnixListingsEnabled'], // true or false
-				'recurseManually' => $config['recurseManually'] // true 
+				'host' => $this->config['host'], // required
+				'root' => $this->config['root'], // required
+				'username' => $this->config['username'] ?? null, // required
+				'password' => $this->config['password'] ?? null, // required
+				'port' => $this->config['port'] ?? null,
+				'ssl' => $this->config['ssl'] ?? null,
+				'timeout' => $this->config['timeout'] ?? null,
+				'utf8' => $this->config['utf8'] ?? null,
+				'passive' => $this->config['passive'] ?? false,
+				'transferMode' => $this->config['transferMode'] ?? null,
+				'systemType' => $this->config['systemType'] ?? 'unix', // 'windows' or 'unix'
+				'ignorePassiveAddress' => $this->config['ignorePassiveAddress'], // true or false
+				'timestampsOnUnixListingsEnabled' => $this->config['timestampsOnUnixListingsEnabled'], // true or false
+				'recurseManually' => $this->config['recurseManually'] // true 
 			])
 		);
 
-		parent::__construct($id, $storageData, $adapter);
+		$this->addFileSystem($adapter);
 	}
 
 }

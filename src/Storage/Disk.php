@@ -19,35 +19,42 @@ use League\Flysystem\UnableToDeleteDirectory;
 use League\Flysystem\UnableToMoveFile;
 use League\Flysystem\UnableToCopyFile;
 use League\Flysystem\FileAttributes;
-use Teleskill\Framework\Storage\Enums\StoragePermissions;
-use Teleskill\Framework\Logger\Log;
-use Exception;
-use League\Flysystem\AwsS3V3\VisibilityConverter;
 use Teleskill\Framework\DateTime\CarbonDateTime;
+use Teleskill\Framework\Logger\Log;
+use Teleskill\Framework\Storage\Enums\StoragePermissions;
+use Teleskill\Framework\Storage\Enums\StorageVisibility;
+use Exception;
 
 abstract class Disk {
 
 	const LOGGER_NS = self::class;
 
 	protected Filesystem $filesystem;
-	public StoragePermissions $permissions;
+	protected array $config;
 	protected ?string $id;
 	protected ?string $prefix;
 	protected ?string $url;
-	protected ?VisibilityConverter $visibility;
+	protected string $visibility;
+	protected string $permissions;
 
-	public function __construct(?string $id, array $storageData, FilesystemAdapter $adapter) {
+	public function __construct(?string $id, array $data) {
+		$this->config = $data['config'] ?? $data['settings'] ?? $data;
+
 		$this->id = $id;
-		$this->permissions = StoragePermissions::from($storageData['permissions'] ?? StoragePermissions::WRITE);
-		$this->prefix = $storageData['prefix'] ?? null;
+		$this->url = $this->config['url'] ?? null;
+		$this->visibility = $this->config['visibility'] ?? StorageVisibility::PUBLIC->value;
+		$this->permissions = $this->config['permissions'] ?? StoragePermissions::WRITE->value;
+		$this->prefix = $this->config['prefix'] ?? null;
+	}
 
+	protected function addFileSystem(FilesystemAdapter $adapter) {
 		// Turn it into a path-prefixed adapter
 		if ($this->prefix) {
 			$adapter = new PathPrefixedAdapter($adapter, $this->prefix);
 		}
 
 		// Turn it into a read-only adapter
-		if ($this->permissions == StoragePermissions::READ_ONLY) {
+		if ($this->permissions == StoragePermissions::READ_ONLY->value) {
 			$adapter = new ReadOnlyFilesystemAdapter($adapter);
 		}
 		
@@ -303,6 +310,18 @@ abstract class Disk {
 		return true;
 	}
 
+	protected function sanitizePath(?string $url): string|null {
+		if ($url) {
+			return preg_replace('/([^:])(\/{2,})/', '$1/', $url);
+		} else {
+			return null;
+		}
+	}
+	
+	public function temporaryUrl(string $path, CarbonDateTime $expiresAt, array $options = []): string|null {
+		return null;
+	}
+
 	public function url(?string $path = null): string|null {
 		$url = $this->url;
 
@@ -311,18 +330,6 @@ abstract class Disk {
 		}
 
 		return $url;
-	}
-
-	protected function sanitizePath(?string $url): string|null {
-		if ($url) {
-			return preg_replace('/([^:])(\/{2,})/', '$1/', $url);
-		} else {
-			return null;
-		}
-	}
-
-	public function temporaryUrl(string $path, CarbonDateTime $expiresAt, array $options = []): string|null {
-		return null;
 	}
 
 	public function download(string $path, ?string $save_as = null): void {
