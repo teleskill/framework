@@ -38,12 +38,11 @@ abstract class Disk {
 	protected string $permissions;
 
 	public function __construct(?string $id, array $data) {
-		$this->config = $data['config'] ?? $data['settings'] ?? $data;
-
 		$this->id = $id;
+		$this->config = $data['config'] ?? $data['settings'] ?? $data;
 		$this->url = $this->config['url'] ?? null;
 		$this->visibility = $this->config['visibility'] ?? StorageVisibility::PUBLIC->value;
-		$this->permissions = $this->config['permissions'] ?? StoragePermissions::WRITE->value;
+		$this->permissions = $data['permissions'] ?? $this->config['permissions'] ?? StoragePermissions::WRITE->value;
 		$this->prefix = $this->config['prefix'] ?? null;
 	}
 
