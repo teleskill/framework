@@ -102,26 +102,21 @@ final class S3Disk extends Disk {
 		exit();
 	}
 
-	public function temporaryUrl(string $path, CarbonDateTime $expiresAt, array $options = []): string|null {
+	public function temporaryUrl(string $path, int|string|CarbonDateTime $expiresAt, array $options = []): string|null {
 		$cmd = $this->s3Client->getCommand('GetObject', array_merge([
 			'Bucket' => $this->bucket,
 			'Key' => $path,
 		], $options));
 		
-		$url = (string) ($this->s3Client->createPresignedRequest($cmd, '+500 minutes'))->getUri();
+		$url = (string) ($this->s3Client->createPresignedRequest($cmd, $expiresAt))->getUri();
 
-		if ($this->url && App::getEnv() == Environment::DEV) {
-			$url = str_replace($this->endpoint, $this->url, $url);
+		if ($this->url) {
+			$url = str_replace($this->sanitizePath($this->endpoint . '/' . $this->bucket), $this->url, $url);
 		}
 		
-		Log::debug([self::LOGGER_NS, __FUNCTION__], $url);
-
-		/*
-		// Non funziona
-		$url = $this->filesystem->temporaryUrl($path, $expiresAt, $options);
+		$url = $this->sanitizePath($url);
 
 		Log::debug([self::LOGGER_NS, __FUNCTION__], $url);
-		*/
 
 		return $url;
 	}

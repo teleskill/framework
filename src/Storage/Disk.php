@@ -132,7 +132,7 @@ abstract class Disk {
 		return false;
 	}
 
-	public function listContents(?string $path = '', bool $recursive = false) : DirectoryListing|FALSE {
+	public function listContents(?string $path = '', bool $recursive = false) : DirectoryListing|false {
 		try {
 			if ($this->filesystem->directoryExists($path)) {
 				return $this->filesystem->listContents($path, $recursive);
@@ -317,7 +317,7 @@ abstract class Disk {
 		}
 	}
 	
-	public function temporaryUrl(string $path, CarbonDateTime $expiresAt, array $options = []): string|null {
+	public function temporaryUrl(string $path, int|string|CarbonDateTime $expiresAt, array $options = []): string|null {
 		return null;
 	}
 
