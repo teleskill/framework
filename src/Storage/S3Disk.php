@@ -10,6 +10,7 @@ use Teleskill\Framework\Core\App;
 use Teleskill\Framework\DateTime\CarbonDateTime;
 use Teleskill\Framework\Logger\Log;
 use Teleskill\Framework\Storage\Disk;
+use Teleskill\Framework\Storage\Enums\StorageVisibility;
 
 final class S3Disk extends Disk {
 
@@ -23,13 +24,14 @@ final class S3Disk extends Disk {
 	protected ?string $version;
 	protected string $bucket;
 	protected array $options = [];
+	protected string $visibility;
 
 	/*
 	's3' => [
 		'driver' => StorageDriver::S3->value,
 		'prefix' => '{app_id}:',
 		'permissions' => StoragePermissions::WRITE->value, // optional
-		'visibility' => StoragePVisibility::PUBLIC->value, // optional
+		'visibility' => StorageVisibility::PUBLIC->value, // optional
 		'key' => '',
 		'secret' => '',
 		'region' => '',
@@ -51,6 +53,7 @@ final class S3Disk extends Disk {
 		$this->bucket = $this->config['bucket'];
 		$this->prefix = $this->config['prefix'] ?? '';
 		$this->options = $this->config['options'] ?? [];
+		$this->visibility = $this->config['visibility'] ?? StorageVisibility::PUBLIC->value;
 
 		$s3Params = [];
 

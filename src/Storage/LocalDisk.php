@@ -4,6 +4,7 @@ namespace Teleskill\Framework\Storage;
 
 use Exception;
 use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\UnixVisibility\PortableVisibilityConverter;
 use Teleskill\Framework\Logger\Log;
 use Teleskill\Framework\Storage\Disk;
 
@@ -12,6 +13,7 @@ final class LocalDisk extends Disk {
 	const LOGGER_NS = self::class;
 
 	protected string $root;
+	protected mixed $visibility;
 
 	/*
 	'local' => [
@@ -28,9 +30,11 @@ final class LocalDisk extends Disk {
 		parent::__construct($id, $data);
 
 		$this->root = $this->config['root'];
+		$this->visibility = $this->config['visibility'] ? PortableVisibilityConverter::fromArray($this->config['visibility']) : null;
 
 		$adapter = new LocalFilesystemAdapter(
-			location: $this->root
+			$this->root,
+			$this->visibility
 		);
 
 		$this->addFileSystem($adapter);

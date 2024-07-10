@@ -22,7 +22,6 @@ use League\Flysystem\FileAttributes;
 use Teleskill\Framework\DateTime\CarbonDateTime;
 use Teleskill\Framework\Logger\Log;
 use Teleskill\Framework\Storage\Enums\StoragePermissions;
-use Teleskill\Framework\Storage\Enums\StorageVisibility;
 use Exception;
 
 abstract class Disk {
@@ -34,14 +33,12 @@ abstract class Disk {
 	protected ?string $id;
 	protected ?string $prefix;
 	protected ?string $url;
-	protected string $visibility;
 	protected string $permissions;
 
 	public function __construct(?string $id, array $data) {
 		$this->id = $id;
 		$this->config = $data['config'] ?? $data['settings'] ?? $data;
 		$this->url = $this->config['url'] ?? null;
-		$this->visibility = $this->config['visibility'] ?? StorageVisibility::PUBLIC->value;
 		$this->permissions = $data['permissions'] ?? $this->config['permissions'] ?? StoragePermissions::WRITE->value;
 		$this->prefix = $this->config['prefix'] ?? null;
 	}
@@ -216,7 +213,7 @@ abstract class Disk {
 
 	public function setVisibility(string $path, ?string $visibility = null) : bool {
 		try {
-            $this->filesystem->setVisibility($path, 'private');
+            $this->filesystem->setVisibility($path, $visibility);
 
 			return true;
         } catch (FilesystemException | UnableToSetVisibility $exception) {
