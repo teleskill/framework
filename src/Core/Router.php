@@ -49,23 +49,16 @@ class Router {
             ?LoggerInterface $logger = null
         ) use ($app) {
             try {
-                $code = (int)$exception->getCode();
+                $code = (int)$exception->getCode() ?? 500;
 
-                Log::error([self::LOGGER_NS, __FUNCTION__], (string) $exception);
-
-                if ($code) {
-                    $response = $app->getResponseFactory()->createResponse()->withStatus($code);
-                } else {
-                    $response = $app->getResponseFactory()->createResponse()->withStatus(500);
-                }
-
-                echo (string) $exception;
-                
+                Log::error([self::LOGGER_NS, __FUNCTION__], (string) $exception);  
             } catch(Exception $e) {
-                $response = $app->getResponseFactory()->createResponse()->withStatus(500);
+                $code = 500;
             }
 
-            echo (string) $exception;
+            $response = $app->getResponseFactory()->createResponse()->withStatus($code);
+
+            //echo (string) $exception;
             
             return $response;
         };
