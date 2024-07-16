@@ -13,29 +13,29 @@ class DynamoDBConnection {
 	const LOGGER_NS = self::class;
 
 	private string $id;
-	private string $key;
 	private ?DynamoDbClient $client;
-	private string $secret;
+	private ?array $credentials;
 	private string $inputDateFormat;
 	private string $inputDateTimeFormat;
 	private string $outputDateFormat;
 	private string $outputDateTimeFormat;
 	private string $timezone;
 	private string $region;
-	private string $endpoint;
+	private string $version;
+	private ?string $endpoint;
 	private bool $opened = false;
 
 	public function __construct(string $id, array $params) {
 		$this->id = $id;
 		$this->timezone = $params['timezone'] ?? 'UTC';
 		$this->region = $params['region'];
-		$this->endpoint = $params['endpoint'];
+		$this->version = $params['version'];
+		$this->endpoint = $params['endpoint'] ?? null;
         $this->inputDateFormat = $params['input']['date_format'];
 		$this->inputDateTimeFormat = $params['input']['date_time_format'];
         $this->outputDateFormat = $params['output']['date_format'];
 		$this->outputDateTimeFormat = $params['output']['date_time_format'];
-		$this->key = $params['credentials']['key'];
-		$this->secret = $params['credentials']['secret'];
+		$this->credentials = $params['credentials'] ?? null;
 
 		$this->opened = false;
 	}
@@ -60,15 +60,18 @@ class DynamoDBConnection {
 	private function client() : DynamoDbClient|null {
 		if (!$this->opened) {
 			try {
-				$this->client = new DynamoDbClient([
-					'endpoint' => $this->endpoint,
+				$args = [
 					'region' => $this->region,
-					'version' => 'latest',
-					'credentials' => [
-						'key' => $this->key,
-						'secret' => $this->secret,
-					],
-				]);
+					'version' => $this->version,
+				];
+				if ($this->endpoint) {
+					$args['endpoint'] = $this->endpoint;
+				}
+				if ($this->credentials) {
+					$args['credentials'] = $this->credentials;
+				}
+
+				$this->client = new DynamoDbClient($args);
 				
 				$this->opened = true;
 			} catch(Exception $e) {
@@ -83,65 +86,8 @@ class DynamoDBConnection {
 		return $this->client;
 	}
 
-	public function createTable() : mixed {
-		/*
-		$response = $this->client()->createTable([
-			'TableName' => $tableName,
-			'AttributeDefinitions' => [
-				[
-					'AttributeName' => 'id',
-					'AttributeType' => 'S'
-				],
-				[
-					'AttributeName' => 'room_session_id',
-					'AttributeType' => 'N'
-				]
-			],
-			'KeySchema' => [
-				[
-					'AttributeName' => 'id',
-					'KeyType' => 'HASH'
-				],
-				[
-					'AttributeName' => 'room_session_id',
-					'KeyType' => 'RANGE'
-				]
-			],
-			'ProvisionedThroughput' => [
-				'ReadCapacityUnits' => 5,
-				'WriteCapacityUnits' => 5
-			],
-			'GlobalSecondaryIndexes' => [
-				[
-					'IndexName' => 'room_session_id-index',
-					'KeySchema' => [
-						[
-							'AttributeName' => 'room_session_id',
-							'KeyType' => 'HASH'
-						]
-					],
-					'Projection' => [
-						'ProjectionType' => 'ALL'
-					],
-					'ProvisionedThroughput' => [
-						'ReadCapacityUnits' => 5,
-						'WriteCapacityUnits' => 5
-					]
-				]
-			]
-		]);
-		
-		echo "Creazione della tabella in corso...\n";
-		print_r($response);
-
-		
-		// Aspetta fino a quando la tabella non è creata
-		$this->client()->waitUntil('TableExists', [
-			'TableName' => $tableName
-		]);
-
-		echo "Tabella creata con successo.\n";
-		*/
+	public function createTable(array $args) : void {
+		$this->client()->createTable($args);
 	}
 
 	public function query(array $query) : mixed {
