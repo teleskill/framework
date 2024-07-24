@@ -295,6 +295,8 @@ abstract class Disk {
 	}
 
 	public function moveUploadedFile(string $source_file, string $destinaton_file): bool {
+		Log::debug([self::LOGGER_NS, __FUNCTION__], $source_file . ' - ' . $destinaton_file);
+
 		$stream = fopen($source_file, 'r+');
 
 		$this->writeStream($destinaton_file, $stream);

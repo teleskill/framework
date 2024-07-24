@@ -99,5 +99,11 @@ final class LocalDisk extends Disk {
 		} catch (Exception $exception) {
 			Log::error([self::LOGGER_NS, __FUNCTION__], (string) $exception);	
 		}
-	} 
+	}
+
+	public function moveUploadedFile(string $source_file, string $destinaton_file): bool {
+		Log::debug([self::LOGGER_NS, __FUNCTION__], $source_file . ' - ' . $this->root . '/' . $destinaton_file);
+
+		return move_uploaded_file($source_file, $this->root . '/' . $destinaton_file);
+	}
 }
