@@ -41,7 +41,7 @@ final class RedisConnection  {
 	private function openWriteConnection() : void {
 		if (!$this->writeConnOpened) {
 			try {
-				Log::debug([self::LOGGER_NS, __FUNCTION__], ['host' => $this->master['host'], 'port' => $this->master['port'], 'db' => $this->db]);
+				Log::debug([self::LOGGER_NS, __FUNCTION__], ['id' => $this->id, 'host' => $this->master['host'], 'port' => $this->master['port'], 'db' => $this->db]);
 
 				$this->writeConn = new PhpRedis();
 				$this->writeConn->connect($this->master['host'], $this->master['port']);
@@ -59,7 +59,7 @@ final class RedisConnection  {
 	private function openReadConnection() : void {
 		if (!$this->readconnopened) {
 			try {
-				Log::debug([self::LOGGER_NS, __FUNCTION__], ['host' => $this->replica['host'], 'port' => $this->replica['port'], 'db' => $this->db]);
+				Log::debug([self::LOGGER_NS, __FUNCTION__], ['id' => $this->id, 'host' => $this->replica['host'], 'port' => $this->replica['port'], 'db' => $this->db]);
 
 				$this->readconn = new PhpRedis();
 				$this->readconn->connect($this->replica['host'], $this->replica['port']);
@@ -86,7 +86,7 @@ final class RedisConnection  {
 	}
     
     public function __call(string $method, array $arguments) : mixed {
-		Log::debug([self::LOGGER_NS, __FUNCTION__], ['prefix' => $this->prefix, 'method' => $method, 'arguments' => $arguments]);
+		Log::debug([self::LOGGER_NS, __FUNCTION__], ['id' => $this->id, 'prefix' => $this->prefix, 'method' => $method, 'arguments' => $arguments]);
 
 		if ($arguments[0] && $this->prefix) {
 			$arguments[0] = $this->prefix . ':' . $arguments[0];
