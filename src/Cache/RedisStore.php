@@ -29,7 +29,7 @@ final class RedisStore extends Store {
 		try {
 			$hash = $this->hashPrefix($key);
 
-			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['id' => $this->id, 'connectionId' => $this->connectionId, 'hash' => $hash]);
 
 			$data = unserialize($this->connection->get($hash));
 
@@ -48,7 +48,7 @@ final class RedisStore extends Store {
 
 			$data = serialize($value);
 
-			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $data, 'ttl' => $ttl]);
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['id' => $this->id, 'connectionId' => $this->connectionId, 'hash' => $hash, 'value' => $data, 'ttl' => $ttl]);
 
 			$options = ['NX'];
 
@@ -71,7 +71,7 @@ final class RedisStore extends Store {
 
 			$data = serialize($value);
 
-			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $data, 'ttl' => $ttl]);
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['id' => $this->id, 'connectionId' => $this->connectionId, 'hash' => $hash, 'value' => $data, 'ttl' => $ttl]);
 
 			$options = [];
 
@@ -92,7 +92,7 @@ final class RedisStore extends Store {
 		try {
 			$hash = $this->hashPrefix($key);
 			
-			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['id' => $this->id, 'connectionId' => $this->connectionId, 'hash' => $hash]);
 
 			return $this->connection->exists($hash);
 		} catch (Exception $e) {
@@ -106,7 +106,7 @@ final class RedisStore extends Store {
 		try {
 			$hash = $this->hashPrefix($key);
 			
-			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['id' => $this->id, 'connectionId' => $this->connectionId, 'hash' => $hash]);
 
 			return $this->connection->incr($hash, $amount);
 		} catch (Exception $e) {
@@ -120,7 +120,7 @@ final class RedisStore extends Store {
 		try {
 			$hash = $this->hashPrefix($key);
 			
-			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['id' => $this->id, 'connectionId' => $this->connectionId, 'hash' => $hash]);
 
 			return $this->connection->decr($hash, $amount);
 
@@ -135,7 +135,7 @@ final class RedisStore extends Store {
 		try {
 			$hash = $this->hashPrefix($key);
 			
-			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['id' => $this->id, 'connectionId' => $this->connectionId, 'hash' => $hash]);
 
 			$value = unserialize($this->connection->get($hash));
 
@@ -165,7 +165,7 @@ final class RedisStore extends Store {
 					$options['EX'] = $ttl;
 				}
 
-				Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => serialize($value), 'options' => $options]);
+				Log::debug([self::LOGGER_NS, __FUNCTION__], ['id' => $this->id, 'connectionId' => $this->connectionId, 'hash' => $hash, 'value' => serialize($value), 'options' => $options]);
 
 				$this->connection->set($hash, serialize($value), $options);
 
@@ -188,7 +188,7 @@ final class RedisStore extends Store {
 			} else {
 				$value = $callback($this);
 
-				Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => serialize($value)]);
+				Log::debug([self::LOGGER_NS, __FUNCTION__], ['id' => $this->id, 'connectionId' => $this->connectionId, 'hash' => $hash, 'value' => serialize($value)]);
 
 				$this->connection->set($hash, serialize($value));
 
@@ -208,7 +208,7 @@ final class RedisStore extends Store {
 
 			$data = serialize($value);
 
-			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash, 'value' => $data]);
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['id' => $this->id, 'connectionId' => $this->connectionId, 'hash' => $hash, 'value' => $data]);
 
 			return $this->connection->set($hash, $data);
 
@@ -223,7 +223,7 @@ final class RedisStore extends Store {
 		try {
 			$hash = $this->hashPrefix($key);
 
-			Log::debug([self::LOGGER_NS, __FUNCTION__], ['hash' => $hash]);
+			Log::debug([self::LOGGER_NS, __FUNCTION__], ['id' => $this->id, 'connectionId' => $this->connectionId, 'hash' => $hash]);
 
 			$this->connection->del($hash);
 
