@@ -41,6 +41,8 @@ final class RedisConnection  {
 	private function openWriteConnection() : void {
 		if (!$this->writeConnOpened) {
 			try {
+				Log::debug([self::LOGGER_NS, __FUNCTION__], ['host' => $this->master['host'], 'port' => $this->master['port'], 'db' => $this->db]);
+
 				$this->writeConn = new PhpRedis();
 				$this->writeConn->connect($this->master['host'], $this->master['port']);
 				$this->writeConn->select($this->db);
@@ -57,6 +59,8 @@ final class RedisConnection  {
 	private function openReadConnection() : void {
 		if (!$this->readconnopened) {
 			try {
+				Log::debug([self::LOGGER_NS, __FUNCTION__], ['host' => $this->replica['host'], 'port' => $this->replica['port'], 'db' => $this->db]);
+
 				$this->readconn = new PhpRedis();
 				$this->readconn->connect($this->replica['host'], $this->replica['port']);
 				$this->readconn->select($this->db);

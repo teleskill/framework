@@ -2,7 +2,6 @@
 
 namespace Teleskill\Framework\DynamoDB;
 
-use Teleskill\Framework\DynamoDB\Connection;
 use Teleskill\Framework\Config\Config;
 
 class DynamoDB {
