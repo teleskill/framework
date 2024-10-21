@@ -69,6 +69,8 @@ class Connection {
 	private function openWriteConnection() : bool  {
 		if (!$this->writeConnOpened) {
 			try {
+				Log::debug([self::LOGGER_NS, __FUNCTION__], ['dns' => $this->writeDsn, 'username' => $this->username, 'attributes' => $this->attributes]);
+
 				$this->writeConn = new PDO($this->writeDsn, $this->username, $this->password, $this->attributes);
 				
 				$this->writeConnOpened = true;
@@ -88,6 +90,8 @@ class Connection {
 	private function openReadConnection() : bool {
 		if (!$this->readConnOpened) {
 			try {
+				Log::debug([self::LOGGER_NS, __FUNCTION__], ['dns' => $this->writeDsn, 'username' => $this->username, 'attributes' => $this->attributes]);
+
 				$this->readConn = new PDO($this->readDsn, $this->username, $this->password, $this->attributes);
 				
 				$this->readConnOpened = true;
