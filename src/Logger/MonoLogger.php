@@ -7,9 +7,6 @@ use Monolog\Logger;
 use Ramsey\Uuid\Uuid;
 use Teleskill\Framework\Logger\Enums\LogLevel;
 use Teleskill\Framework\Logger\Enums\LogHandler;
-use Teleskill\Framework\MailSender\MailSender;
-use Teleskill\Framework\MailSender\Email;
-use Teleskill\Framework\MailSender\Enums\MailPriority;
 use Stringable;
 use Exception;
 
@@ -47,20 +44,30 @@ abstract class MonoLogger {
         } catch(Exception $e) {}
     }
 
-    public function format(array $referrer, mixed $message) : null|string {
+    public function format(mixed $message) : null|string {
         try {
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 8);
+            $file = $backtrace[3]['file'];
+            $line = $backtrace[3]['line'];
+            $function = $backtrace[4]['function'] ?? 'N/A';
+            $class = $backtrace[4]['class'] ?? 'N/A';
+            $referrer = $file . ':' . $line . ' | ' . $class . '->' . $function;
+            //$referrer = json_encode($backtrace);
+
             switch (gettype($message)) {
                 case 'array':
-                    return '[' . implode('\\', $referrer) . '] | ' . json_encode($message);
+                    return $referrer . ' | ' . json_encode($message);
                     break;
                 case 'string':
-                    return '[' . implode('\\', $referrer) . '] | ' . $message;
+                    return '[' . $referrer . ' | ' . $message;
                     break;
                 default:
-                    return '[' . implode('\\', $referrer) . '] | ' . (string) $message;
+                    return '[' . $referrer . ' | ' . (string) $message;
                     break;
             }
-        } catch(Exception $e) {}
+        } catch(Exception $e) {
+
+        }
 
         return null;
     }
@@ -147,7 +154,7 @@ abstract class MonoLogger {
                 return false;
             }
 
-            $data = $this->format($referrer, $message);
+            $data = $this->format($message);
             
             switch ($level) {
                 case LogLevel::DEBUG:
