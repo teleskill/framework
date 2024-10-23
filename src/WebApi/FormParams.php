@@ -19,11 +19,11 @@ class FormParams {
         try {
             $this->data[$field] = $value;
 
-            Log::debug([self::LOGGER_NS, __FUNCTION__], 'addField: ' . $field);
+            Log::debug([self::LOGGER_NS, __FUNCTION__], $field);
 
             return true;
         } catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], 'addField exception: ' . (string) $e);
+            Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
 
             return false;
         }

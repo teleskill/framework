@@ -19,7 +19,7 @@ class Multipart {
 
     public function addField(string $field, mixed $value) : bool {
         try {
-            Log::debug([self::LOGGER_NS, __FUNCTION__], 'addField: ' . $field);
+            Log::debug([self::LOGGER_NS, __FUNCTION__], $field);
 
             $this->data[] = [
                 'name'     => $field,
@@ -32,7 +32,7 @@ class Multipart {
 
             return true;
         } catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], 'addField exception: ' . (string) $e);
+            Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
 
             return false;
         }
@@ -41,7 +41,7 @@ class Multipart {
     public function addFile(string $field, LocalDisk $storage, string $fileName) : bool {
         try {
             if ($storage->fileExists($fileName)) {
-                Log::debug([self::LOGGER_NS, __FUNCTION__], 'addFile: ' . $storage->getFullPathName($fileName));
+                Log::debug([self::LOGGER_NS, __FUNCTION__], $storage->getFullPathName($fileName));
 
                 $this->data[] = [
                     'name'     => $field,
@@ -56,12 +56,12 @@ class Multipart {
 
                 return true;
             } else {
-                Log::error([self::LOGGER_NS, __FUNCTION__], 'addFile not found: ' . $fileName);
+                Log::error([self::LOGGER_NS, __FUNCTION__], $fileName);
 
                 return false;
             }
         } catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], 'addFile exception: ' . (string) $e);
+            Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
 
             return false;
         }

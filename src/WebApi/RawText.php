@@ -19,11 +19,11 @@ class RawText {
         try {
             $this->data = $data;
 
-            Log::debug([self::LOGGER_NS, __FUNCTION__], 'set: ' . $data);
+            Log::debug([self::LOGGER_NS, __FUNCTION__], $data);
             
             return true;
         } catch (Exception $e) {
-            Log::error([self::LOGGER_NS, __FUNCTION__], 'set exception: ' . (string) $e);
+            Log::error([self::LOGGER_NS, __FUNCTION__], (string) $e);
 
             return false;
         }
