@@ -50,8 +50,21 @@ class Router {
         ) use ($app) {
             try {
                 $code = (int)$exception->getCode() ?? 500;
+            }
+            catch(Exception $e) {
+                $code = 500;
+            }
 
-                Log::error([self::LOGGER_NS, __FUNCTION__], (string) $exception);  
+            $urlNotFound = "";
+            try {
+                $urlNotFound = (string)$request->getUri();
+            }
+            catch(Exception $e) {
+                
+            }
+
+            try {
+                Log::error([self::LOGGER_NS, __FUNCTION__], $urlNotFound . ' - ' . ((string) $exception));  
             } catch(Exception $e) {
                 $code = 500;
             }
