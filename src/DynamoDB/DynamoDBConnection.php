@@ -94,6 +94,14 @@ class DynamoDBConnection {
 		return $this->client()->query($query);
 	}
 
+	public function deleteItem(array $query) : mixed {
+		return $this->client()->deleteItem($query);
+	}
+
+	public function batchWriteItem(array $query) : mixed {
+		return $this->client()->batchWriteItem($query);
+	}
+
 	public function getBoolean(mixed $value) : bool {
 		return ($value == 1 || $value == '1');
 	}
