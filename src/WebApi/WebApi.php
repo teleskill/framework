@@ -72,6 +72,12 @@ class WebApi {
             case WebApiMethod::PUT:
                 return $this->put();
                 break;
+            case WebApiMethod::PATCH:
+                return $this->patch();
+                break;
+            case WebApiMethod::DELETE:
+                return $this->delete();
+                break;
         }
 
         return false;
@@ -166,6 +172,92 @@ class WebApi {
             $client = new GuzzleHttpClient(['http_errors' => false]);
 
             $response = $client->put($this->apiUrl, array_merge($this->headers->get(), $this->data->get()));
+
+            $webApiResponse = new WebApiResponse($response);
+
+            if ($response->getStatusCode() >= 200 && $response->getStatusCode() <= 299) {
+                Log::info([self::LOGGER_NS, __FUNCTION__], [
+                    'url' => $this->apiUrl,
+                    'payload' => $this->data->toString(),
+                    'status' => [
+                        'message' => $webApiResponse->statusMessage,
+                        'code' => $webApiResponse->statusCode
+                    ],
+                    'response' => $webApiResponse->content
+                ]);
+            } else {
+                Log::error([self::LOGGER_NS, __FUNCTION__], [
+                    'url' => $this->apiUrl,
+                    'payload' => $this->data->toString(),
+                    'status' => [
+                        'message' => $webApiResponse->statusMessage,
+                        'code' => $webApiResponse->statusCode
+                    ],
+                    'response' => $webApiResponse->content
+                ]);
+            }
+            
+            return $webApiResponse;
+
+        } catch (Exception $e) {
+            Log::error([self::LOGGER_NS, __FUNCTION__], [
+                'url' => $this->apiUrl,
+                'payload' => $this->data->toString(),
+                'exception' => (string) $e
+            ]);
+        }
+
+        return false;
+    }
+
+    private function patch() : WebApiResponse|false {
+        try {
+            $client = new GuzzleHttpClient(['http_errors' => false]);
+
+            $response = $client->patch($this->apiUrl, array_merge($this->headers->get(), $this->data->get()));
+
+            $webApiResponse = new WebApiResponse($response);
+
+            if ($response->getStatusCode() >= 200 && $response->getStatusCode() <= 299) {
+                Log::info([self::LOGGER_NS, __FUNCTION__], [
+                    'url' => $this->apiUrl,
+                    'payload' => $this->data->toString(),
+                    'status' => [
+                        'message' => $webApiResponse->statusMessage,
+                        'code' => $webApiResponse->statusCode
+                    ],
+                    'response' => $webApiResponse->content
+                ]);
+            } else {
+                Log::error([self::LOGGER_NS, __FUNCTION__], [
+                    'url' => $this->apiUrl,
+                    'payload' => $this->data->toString(),
+                    'status' => [
+                        'message' => $webApiResponse->statusMessage,
+                        'code' => $webApiResponse->statusCode
+                    ],
+                    'response' => $webApiResponse->content
+                ]);
+            }
+            
+            return $webApiResponse;
+
+        } catch (Exception $e) {
+            Log::error([self::LOGGER_NS, __FUNCTION__], [
+                'url' => $this->apiUrl,
+                'payload' => $this->data->toString(),
+                'exception' => (string) $e
+            ]);
+        }
+
+        return false;
+    }
+
+    private function delete() : WebApiResponse|false {
+        try {
+            $client = new GuzzleHttpClient(['http_errors' => false]);
+
+            $response = $client->delete($this->apiUrl, array_merge($this->headers->get(), $this->data->get()));
 
             $webApiResponse = new WebApiResponse($response);
 
