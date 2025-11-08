@@ -83,7 +83,7 @@ class Redis {
 		return $instance->getConnection($id);
     }
 
-	protected function getConnection(?string $id = null) : RedisConnection {
+	protected function getConnection(?string $id = null) : RedisConnection|null {
 		if (!$id) {
 			$id = $this->default;
 		}
