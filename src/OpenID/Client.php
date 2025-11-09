@@ -123,6 +123,17 @@ class Client {
                     $webApi->body()->addField('grant_type', 'client_credentials');
 
                     break;
+                case OpenIDGrantType::OAUTH2_CLIENT_CREDENTIALS:
+                    $webApi->headers()->set([
+                        'Cache-Control' => 'no-cache',
+                        'Content-Type'  => 'application/x-www-form-urlencoded'
+                    ]);
+
+                    $webApi->body()->addField('grant_type', 'client_credentials');
+                    $webApi->body()->addField('client_id', $this->clientId);
+                    $webApi->body()->addField('client_secret', $this->clientSecret);
+                    
+                    break;
             }
 
             $webApiResponse = $webApi->send();
