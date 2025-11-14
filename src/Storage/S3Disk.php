@@ -90,18 +90,17 @@ final class S3Disk extends Disk {
 		$this->addFileSystem($adapter);
 	}
 
-	public function download(string $path, ?string $save_as = null): void {
-		Log::debug([self::LOGGER_NS, __FUNCTION__], [
-			'path' => $path,
-			'save_as' => $save_as,
-		]);
+	public function download(string $path, ?string $save_as = null): void
+	{
+		// Normalizza i caratteri (rimuove accenti tipo à, è, ò)
+		$safeName = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $save_as);
+		$safeName = preg_replace('/[^A-Za-z0-9._-]/', '_', $safeName); // pulizia residua
 
 		$url = $this->temporaryUrl($path, App::now()->addMinutes(5), [
-			'ResponseContentDisposition' => "attachment;filename={$save_as}"
+			'ResponseContentDisposition' => "attachment; filename=\"{$safeName}\""
 		]);
 
 		header("Location: {$url}");
-		
 		exit();
 	}
 
